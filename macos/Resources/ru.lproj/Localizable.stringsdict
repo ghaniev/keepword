@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>%lld meetings</key><dict>
+    <key>NSStringLocalizedFormatKey</key><string>%#@n@</string>
+    <key>n</key><dict>
+      <key>NSStringFormatSpecTypeKey</key><string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key><string>lld</string>
+      <key>one</key><string>%lld встреча</string>
+      <key>few</key><string>%lld встречи</string>
+      <key>many</key><string>%lld встреч</string>
+      <key>other</key><string>%lld встреч</string>
+    </dict>
+  </dict>
+  <key>%lld new speakers</key><dict>
+    <key>NSStringLocalizedFormatKey</key><string>%#@n@</string>
+    <key>n</key><dict>
+      <key>NSStringFormatSpecTypeKey</key><string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key><string>lld</string>
+      <key>one</key><string>%lld новый спикер</string>
+      <key>few</key><string>%lld новых спикера</string>
+      <key>many</key><string>%lld новых спикеров</string>
+      <key>other</key><string>%lld новых спикеров</string>
+    </dict>
+  </dict>
+  <key>%lld attendees</key><dict>
+    <key>NSStringLocalizedFormatKey</key><string>%#@n@</string>
+    <key>n</key><dict>
+      <key>NSStringFormatSpecTypeKey</key><string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key><string>lld</string>
+      <key>one</key><string>%lld участник</string>
+      <key>few</key><string>%lld участника</string>
+      <key>many</key><string>%lld участников</string>
+      <key>other</key><string>%lld участников</string>
+    </dict>
+  </dict>
+  <key>%lld results</key><dict>
+    <key>NSStringLocalizedFormatKey</key><string>%#@n@</string>
+    <key>n</key><dict>
+      <key>NSStringFormatSpecTypeKey</key><string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key><string>lld</string>
+      <key>one</key><string>%lld результат</string>
+      <key>few</key><string>%lld результата</string>
+      <key>many</key><string>%lld результатов</string>
+      <key>other</key><string>%lld результатов</string>
+    </dict>
+  </dict>
+</dict></plist>

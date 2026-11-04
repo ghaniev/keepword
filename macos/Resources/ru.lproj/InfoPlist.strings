@@ -1,0 +1,6 @@
+"NSMicrophoneUsageDescription" = "MeetNotes записывает микрофон, чтобы транскрибировать вашу сторону звонка.";
+"NSAudioCaptureUsageDescription" = "MeetNotes записывает звук вашего Mac, чтобы другие участники звонка попали в транскрипт. Всё остаётся на этом Mac.";
+"NSCalendarsFullAccessUsageDescription" = "MeetNotes показывает предстоящие встречи и предлагает записать звонок, когда он начинается.";
+"NSRemindersFullAccessUsageDescription" = "MeetNotes отправляет ваши задачи в приложение «Напоминания».";
+"NSScreenCaptureUsageDescription" = "MeetNotes делает снимки экрана во время звонка, когда вы нажимаете кнопку снимка.";
+"NSLocalNetworkUsageDescription" = "MeetNotes обращается к локальному AI-серверу (Ollama / LM Studio).";

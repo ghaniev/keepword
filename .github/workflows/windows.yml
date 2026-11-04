@@ -1,0 +1,46 @@
+name: Windows
+on:
+  workflow_dispatch:
+  push:
+    paths: ['windows/**', '.github/workflows/windows.yml']
+  pull_request:
+    paths: ['windows/**', '.github/workflows/windows.yml']
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: npm
+          cache-dependency-path: windows/app/package-lock.json
+      - name: Rust
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.93.1 --profile minimal
+          rustup default 1.93.1
+      - name: Dependencies and native runtimes
+        working-directory: windows/app
+        shell: pwsh
+        run: |
+          npm ci --no-audit --no-fund
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          npm run prepare-native
+      - name: Checks
+        shell: pwsh
+        run: ./windows/scripts/check.ps1
+      - name: Package unsigned test installer
+        shell: pwsh
+        run: ./windows/scripts/package-release.ps1
+      - name: Install, upgrade and uninstall smoke test
+        shell: pwsh
+        run: ./windows/scripts/smoke-installer.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MeetNotes-Windows-x64
+          path: windows/app/src-tauri/target/release/bundle/nsis/*
+          if-no-files-found: error

@@ -1,0 +1,39 @@
+[package]
+name = "meetnotes"
+version = "0.1.1"
+edition = "2021"
+
+[features]
+default = ["bundled-sqlite"]
+# scripts/check.sh turns this off: cross-checking from macOS can't compile C for MSVC.
+bundled-sqlite = ["rusqlite/bundled"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "protocol-asset"] }
+tauri-plugin-single-instance = "2"
+tauri-plugin-updater = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = "0.32"
+cpal = "0.15"
+hound = "3.5"
+uuid = { version = "1", features = ["v4"] }
+reqwest = { version = "0.12", features = ["blocking", "json", "multipart"] }
+sha2 = "0.10"
+ort = { version = "=2.0.0-rc.10", default-features = false, features = ["ndarray", "load-dynamic"] }
+ndarray = "0.16"
+rubato = "0.16"
+rfd = "0.15"
+keyring = { version = "3", features = ["windows-native"] }
+chrono = { version = "0.4", features = ["serde"] }
+tiny_http = "0.12"
+base64 = "0.22"
+sherpa-onnx = "=1.13.8"
+tar = "0.4"
+bzip2 = "0.5"
+screenshots = "0.8"
+tokenizers = { version = "0.21", default-features = false, features = ["fancy-regex"] }
+windows = { version = "0.62", features = ["Win32_Media_Audio", "Win32_System_Com", "Win32_System_Threading", "Win32_System_SystemInformation", "Win32_System_JobObjects", "Win32_Security", "Win32_Foundation"] }

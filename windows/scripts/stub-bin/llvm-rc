@@ -1,0 +1,7 @@
+#!/bin/sh
+# ponytail: fake resource compiler for `cargo check` on macOS; writes an empty .res after /fo.
+# cargo check never links it. Real builds run on Windows with the MSVC toolchain.
+while [ $# -gt 0 ]; do
+  [ "$1" = /fo ] && : > "$2"
+  shift
+done

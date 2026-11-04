@@ -1,0 +1,5 @@
+node_modules/
+dist/
+target/
+app/src-tauri/gen/
+app/src-tauri/binaries/
