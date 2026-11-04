@@ -8,9 +8,9 @@ $installation = Join-Path $testRoot 'installation'
 $library = Join-Path $testRoot 'library'
 $installer = Get-ChildItem (Join-Path $tauriRoot 'target/release/bundle/nsis/*-setup.exe') | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if (-not $installer) { throw 'Build the installer first' }
-if (Get-Process meetnotes -ErrorAction SilentlyContinue) { throw 'Close MeetNotes before the installer smoke test; existing sessions are never stopped by this script' }
-$existing = Get-ChildItem HKCU:/Software/Microsoft/Windows/CurrentVersion/Uninstall -ErrorAction SilentlyContinue | Get-ItemProperty | Where-Object { $_.DisplayName -like 'MeetNotes*' }
-if ($existing | Where-Object { $_.InstallLocation -and $_.InstallLocation.TrimEnd('\') -ne $installation.TrimEnd('\') }) { throw 'An existing MeetNotes installation must be tested in a clean Windows account or VM' }
+if (Get-Process meetnotes -ErrorAction SilentlyContinue) { throw 'Close Keepword before the installer smoke test; existing sessions are never stopped by this script' }
+$existing = Get-ChildItem HKCU:/Software/Microsoft/Windows/CurrentVersion/Uninstall -ErrorAction SilentlyContinue | Get-ItemProperty | Where-Object { $_.DisplayName -like 'Keepword*' }
+if ($existing | Where-Object { $_.InstallLocation -and $_.InstallLocation.TrimEnd('\') -ne $installation.TrimEnd('\') }) { throw 'An existing Keepword installation must be tested in a clean Windows account or VM' }
 New-Item -ItemType Directory -Force -Path $testRoot,$library | Out-Null
 'Keep this library during upgrades and uninstall.' | Set-Content (Join-Path $library 'keep.txt') -Encoding UTF8
 function Install-TestBuild {

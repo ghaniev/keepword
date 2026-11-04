@@ -193,7 +193,7 @@ pub async fn show_overlay(app: AppHandle, id: String) -> Res<()> {
                 "overlay",
                 tauri::WebviewUrl::App(format!("index.html?overlay={id}").into()),
             )
-            .title("MeetNotes")
+            .title("Keepword")
             .inner_size(460.0, 400.0)
             .min_inner_size(380.0, 250.0)
             .always_on_top(true)
@@ -334,6 +334,10 @@ pub fn save_preferences(
         if let Some(secrets) = server.as_object_mut().and_then(|o| o.remove(field)) {
             settings::set_secret(&format!("mcp.{id}"), &secrets.to_string())?;
         }
+        // The secret of an OAuth app registered by hand goes to Credential Manager too.
+        if let Some(secret) = server.as_object_mut().and_then(|o| o.remove("clientSecret")) {
+            settings::set_secret(&format!("mcp.client.{id}"), secret.as_str().unwrap_or(""))?;
+        }
     }
     let store = state.store.lock().unwrap();
     let old = settings::load(&store.dir)?;
@@ -367,6 +371,23 @@ pub async fn mcp_tools(app: AppHandle, server_id: String) -> Res<Vec<Value>> {
     })
     .await
     .map_err(|e| e.to_string())?
+}
+/// Browser sign-in (OAuth) for an MCP server whose config has "auth": "oauth".
+#[tauri::command]
+pub async fn mcp_sign_in(app: AppHandle, server_id: String) -> Res<()> {
+    tauri::async_runtime::spawn_blocking(move || {
+        crate::oauth::sign_in(&server_config(&app, &server_id)?, |url| open_external(url.into()))
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+#[tauri::command]
+pub fn mcp_sign_out(server_id: String) -> Res<()> {
+    crate::oauth::set_tokens(&server_id, None)
+}
+#[tauri::command]
+pub fn mcp_signed_in(server_id: String) -> bool {
+    crate::oauth::signed_in(&server_id)
 }
 #[tauri::command]
 pub async fn mcp_call(

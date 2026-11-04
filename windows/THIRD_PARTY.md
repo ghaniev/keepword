@@ -29,7 +29,7 @@ SOFTWARE.
 
 - [Parakeet TDT 0.6B v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), NVIDIA;
   [ONNX conversion](https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx), istupakov.
-  CC BY 4.0. Downloaded separately, converted/quantized model; MeetNotes does not train these weights.
+  CC BY 4.0. Downloaded separately, converted/quantized model; Keepword does not train these weights.
 - ONNX Runtime 1.22.0, Microsoft, MIT. Its LICENSE is bundled in `onnxruntime/`.
 - [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), Apache-2.0, official Rust/static Windows bindings.
 - [pyannote segmentation 3.0](https://huggingface.co/pyannote/segmentation-3.0), MIT,
@@ -45,7 +45,7 @@ SOFTWARE.
 - [FFmpeg](https://ffmpeg.org/), LGPL-3.0 shared build from
   [BtbN](https://github.com/BtbN/FFmpeg-Builds/releases/tag/autobuild-2026-10-21-13-06),
   n8.1.3-20-gc8de997cb1. FFmpeg is invoked as a separate process. The shared libraries may be replaced
-  by compatible user builds; MeetNotes does not impose a restriction on reverse engineering for debugging
+  by compatible user builds; Keepword does not impose a restriction on reverse engineering for debugging
   modifications to those libraries. The LGPL text is included in `media/LICENSE.txt`.
   Corresponding FFmpeg source: [c8de997cb1](https://github.com/FFmpeg/FFmpeg/tree/c8de997cb1);
   build recipes and dependency source retrieval instructions: [FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds).

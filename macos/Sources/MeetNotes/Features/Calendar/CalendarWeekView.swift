@@ -182,7 +182,7 @@ struct CalendarWeekView: View {
             Image(systemName: "calendar.badge.exclamationmark").font(.system(size: 34)).foregroundStyle(.tertiary)
             if calendar.status == .denied || calendar.status == .restricted || calendar.status == .writeOnly {
                 Text("Calendar access is off").font(.headline)
-                Text("MeetNotes can't read your calendars. Turn MeetNotes on in System Settings → Privacy & Security → Calendars.")
+                Text("Keepword can't read your calendars. Turn Keepword on in System Settings → Privacy & Security → Calendars.")
                     .foregroundStyle(.secondary).multilineTextAlignment(.center)
                 Button("Open Privacy Settings") { Task { await calendar.requestAccess() } }
             } else {

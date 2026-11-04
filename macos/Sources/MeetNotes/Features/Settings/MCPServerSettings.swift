@@ -8,10 +8,10 @@ struct MCPSettings: View {
     @State private var reveal = false
 
     private var url: String { "http://127.0.0.1:\(port)/mcp" }
-    private var claudeCode: String { "claude mcp add --transport http meetnotes \(url) --header \"Authorization: Bearer \(token)\"" }
+    private var claudeCode: String { "claude mcp add --transport http keepword \(url) --header \"Authorization: Bearer \(token)\"" }
     private var desktopJSON: String {
         """
-        {"mcpServers": {"meetnotes": {"command": "npx", "args": ["-y", "mcp-remote", "\(url)", "--header", "Authorization: Bearer \(token)"]}}}
+        {"mcpServers": {"keepword": {"command": "npx", "args": ["-y", "mcp-remote", "\(url)", "--header", "Authorization: Bearer \(token)"]}}}
         """
     }
 

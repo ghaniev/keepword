@@ -1,7 +1,8 @@
+import AppKit
 import Foundation
 
-/// A user-configured MCP server MeetNotes talks to as a client (e.g. kaiten-mcp-server to create tasks).
-/// Env values and headers can hold tokens, so they live in the Keychain; the rest is in preferences.
+/// A user-configured MCP server Keepword talks to as a client (e.g. Jira or Linear, to create tasks).
+/// Env values, headers and OAuth tokens live in the Keychain; the rest is in preferences.
 struct MCPServerConfig: Codable, Identifiable, Hashable {
     var id = UUID().uuidString
     var name = ""
@@ -11,6 +12,17 @@ struct MCPServerConfig: Codable, Identifiable, Hashable {
     var url = ""
     var taskTool: String?  // tool used to create a task, e.g. kaiten_create_card
     var taskDefaults: [String: String] = [:]  // remembered non-task fields (board_id, column_id…)
+    var auth: String?  // "oauth": browser sign-in (HTTP only); otherwise the headers below
+    var preset: String?  // MCPPresets id
+    var clientID: String?  // an OAuth app registered by hand, for servers without dynamic registration
+
+    /// Secret of the hand-registered OAuth app.
+    var clientSecret: String {
+        get { Keychain.get("mcp.client.\(id)") }
+        nonmutating set { Keychain.set("mcp.client.\(id)", newValue) }
+    }
+
+    var usesOAuth: Bool { transport == "http" && auth == "oauth" }
 
     /// KEY=VALUE environment (stdio) or Name: value headers (http), stored together in the Keychain.
     var secrets: [String: String] {
@@ -115,7 +127,7 @@ actor MCPClient {
         if config.transport == "stdio" { try launch() }
         _ = try await request("initialize", [
             "protocolVersion": "2025-06-18", "capabilities": [String: Any](),
-            "clientInfo": ["name": "MeetNotes", "version": "0.4"],
+            "clientInfo": ["name": "Keepword", "version": "0.4"],
         ], timeout: 60)
         try await notify("notifications/initialized")
         initialized = true
@@ -234,18 +246,28 @@ actor MCPClient {
     }
 
     /// Streamable HTTP: one POST per message; the reply is JSON or an SSE stream carrying the response.
-    private func post(_ msg: [String: Any], expecting id: Int? = nil) async throws -> [String: Any]? {
+    private func post(_ msg: [String: Any], expecting id: Int? = nil, retried: Bool = false) async throws -> [String: Any]? {
         guard let url = URL(string: config.url) else { throw LLMError(message: "Invalid MCP server URL") }
         var r = URLRequest(url: url, timeoutInterval: 120)
         r.httpMethod = "POST"
         r.setValue("application/json", forHTTPHeaderField: "Content-Type")
         r.setValue("application/json, text/event-stream", forHTTPHeaderField: "Accept")
         if let sessionID { r.setValue(sessionID, forHTTPHeaderField: "Mcp-Session-Id") }
-        for (k, v) in config.secrets { r.setValue(v, forHTTPHeaderField: k) }
+        if config.usesOAuth {
+            guard let token = try await MCPOAuth.shared.accessToken(for: config, forceRefresh: retried) else { throw MCPAuthRequired(server: config.name) }
+            r.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            for (k, v) in config.secrets { r.setValue(v, forHTTPHeaderField: k) }
+        }
         r.httpBody = try JSONSerialization.data(withJSONObject: msg)
         let (data, response) = try await URLSession.shared.data(for: r)
         let http = response as? HTTPURLResponse
         if let s = http?.value(forHTTPHeaderField: "Mcp-Session-Id") { sessionID = s }
+        if http?.statusCode == 401 {
+            guard config.usesOAuth else { throw LLMError(message: String(localized: "\(config.name) rejected the token (HTTP 401). Check the headers.")) }
+            if !retried { return try await post(msg, expecting: id, retried: true) }  // expired early: refresh once
+            throw MCPAuthRequired(server: config.name)
+        }
         guard let code = http?.statusCode, (200..<300).contains(code) else {
             throw LLMError(message: "MCP server HTTP \(http?.statusCode ?? 0): \(String(decoding: data.prefix(200), as: UTF8.self))")
         }
@@ -266,6 +288,8 @@ final class MCPConnections: ObservableObject {
     @Published var servers: [MCPServerConfig] = []
     @Published var tools: [String: [MCPTool]] = [:]  // server id → tools
     @Published var status: [String: String] = [:]  // server id → error text
+    @Published var needsSignIn: Set<String> = []  // OAuth servers without (valid) tokens
+    @Published var signingIn: String?
     private var clients: [String: MCPClient] = [:]
 
     init() {
@@ -283,6 +307,8 @@ final class MCPConnections: ObservableObject {
 
     func remove(_ s: MCPServerConfig) {
         s.secrets = [:]
+        s.clientSecret = ""
+        MCPOAuth.setTokens(nil, s.id)
         servers.removeAll { $0.id == s.id }
         tools[s.id] = nil
         persist()
@@ -306,13 +332,45 @@ final class MCPConnections: ObservableObject {
             status[s.id] = nil
             return list
         } catch {
+            if error is MCPAuthRequired { needsSignIn.insert(s.id) }
             status[s.id] = error.localizedDescription
             return []
         }
     }
 
     func call(_ s: MCPServerConfig, _ tool: String, _ args: [String: Any]) async throws -> String {
-        try await client(s).call(tool, args)
+        do { return try await client(s).call(tool, args) } catch let e as MCPAuthRequired {
+            needsSignIn.insert(s.id)
+            throw e
+        }
+    }
+
+    /// OAuth servers that have no tokens yet, or whose last call said the sign-in is gone.
+    func mustSignIn(_ s: MCPServerConfig) -> Bool { s.usesOAuth && (needsSignIn.contains(s.id) || !MCPOAuth.signedIn(s.id)) }
+
+    /// Browser sign-in, then reconnect and list the tools.
+    func signIn(_ s: MCPServerConfig) async {
+        signingIn = s.id
+        status[s.id] = nil
+        defer { signingIn = nil }
+        do {
+            try await MCPOAuth.shared.signIn(s, scope: MCPPresets.find(s.preset)?.scope) { url in
+                await MainActor.run { _ = NSWorkspace.shared.open(url) }
+            }
+            NSApp.activate()
+            needsSignIn.remove(s.id)
+            await clients.removeValue(forKey: s.id)?.stop()
+            await connect(s)
+        } catch {
+            NSApp.activate()
+            status[s.id] = error.localizedDescription
+        }
+    }
+
+    func signOut(_ s: MCPServerConfig) {
+        MCPOAuth.setTokens(nil, s.id)
+        tools[s.id] = nil
+        Task { await clients.removeValue(forKey: s.id)?.stop() }
     }
 
     func stopAll() {

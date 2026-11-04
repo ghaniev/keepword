@@ -24,7 +24,7 @@ Resolved versions are pinned in `Package.resolved`.
 
 ## Bundled binary
 
-- [llama.cpp](https://github.com/ggml-org/llama.cpp), MIT, release b11457 (`llama.xcframework`), copied into `MeetNotes.app/Contents/Frameworks`.
+- [llama.cpp](https://github.com/ggml-org/llama.cpp), MIT, release b11457 (`llama.xcframework`), copied into `Keepword.app/Contents/Frameworks`.
 
 ## Downloaded models
 

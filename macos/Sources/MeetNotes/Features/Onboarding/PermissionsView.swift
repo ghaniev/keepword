@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The "Permissions" window: every macOS permission MeetNotes uses, its status and a button to grant it.
+/// The "Permissions" window: every macOS permission Keepword uses, its status and a button to grant it.
 /// Opens at launch while recording permissions are missing, from the app menu, and when a recording
 /// can't start because of a permission.
 struct PermissionsView: View {
@@ -24,7 +24,7 @@ struct PermissionsView: View {
                 }
             }
             .background(RoundedRectangle(cornerRadius: 10).fill(Color.primary.opacity(0.04)))
-            Text("After you turn on Screen or System Audio Recording in System Settings, macOS may ask to reopen MeetNotes.")
+            Text("After you turn on Screen or System Audio Recording in System Settings, macOS may ask to reopen Keepword.")
                 .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             HStack {
                 Toggle("Open at launch while something required is missing", isOn: $showAtLaunch)

@@ -8,7 +8,7 @@ struct TaskRequest: Identifiable {
 }
 
 extension TaskMapping.Draft {
-    /// Task text for an action item, with a link back to the meeting in MeetNotes.
+    /// Task text for an action item, with a link back to the meeting in Keepword.
     init(item: ActionItem, meeting: Meeting?) {
         var details = item.text
         if let who = item.assignee { details += "\n\nAssignee: \(who)" }
@@ -46,11 +46,19 @@ struct CreateTaskSheet: View {
 
     private var server: MCPServerConfig? { mcp.servers.first { $0.id == serverID } }
     private var tool: MCPTool? { tools.first { $0.name == toolName } }
+    private var preset: MCPPreset? { MCPPresets.find(server?.preset) }
+
+    /// The listing tool that offers choices for a field: the preset's, else one guessed from the field name.
+    private func lookup(for key: String) -> (tool: MCPTool, spec: MCPPreset.Lookup?)? {
+        if let spec = preset?.lookups[key], let t = tools.first(where: { $0.name == spec.tool }) { return (t, spec) }
+        return TaskMapping.lookupTool(for: key, in: tools).map { ($0, nil) }
+    }
 
     /// Tool fields shared by all tasks, plus ID fields the pick-lists need (e.g. space_id for list_boards).
     private var sharedFields: [(key: String, prop: [String: Any], required: Bool)] {
         guard let tool else { return [] }
-        var fields = tool.properties.filter { !TaskMapping.perTaskField($0.key) && $0.key != "idempotency_key" }
+        let hidden = preset?.build == nil || tool.name != preset?.taskTool ? [] : preset?.hidden ?? []
+        var fields = tool.properties.filter { !TaskMapping.perTaskField($0.key) && $0.key != "idempotency_key" && !hidden.contains($0.key) }
             .map { (key: $0.key, prop: $0.value, required: tool.required.contains($0.key)) }
         for f in fields {
             guard let lookup = TaskMapping.lookupTool(for: f.key, in: tools) else { continue }
@@ -68,7 +76,8 @@ struct CreateTaskSheet: View {
 
     private var missingRequired: Bool {
         guard let tool else { return true }
-        return tool.required.contains { k in !TaskMapping.perTaskField(k) && (shared[k] ?? "").trimmingCharacters(in: .whitespaces).isEmpty }
+        let hidden = preset?.build == nil || tool.name != preset?.taskTool ? [] : preset?.hidden ?? []
+        return tool.required.contains { k in !TaskMapping.perTaskField(k) && !hidden.contains(k) && (shared[k] ?? "").trimmingCharacters(in: .whitespaces).isEmpty }
     }
 
     var body: some View {
@@ -82,8 +91,13 @@ struct CreateTaskSheet: View {
                     Text(server.name).foregroundStyle(.secondary)
                 }
             }
-            if connecting {
-                HStack { ProgressView().controlSize(.small); Text("Connecting to \(server?.name ?? "server")…") }
+            if connecting || mcp.signingIn == serverID {
+                HStack { ProgressView().controlSize(.small); Text(mcp.signingIn == serverID ? "Waiting for the browser…" : "Connecting to \(server?.name ?? "server")…") }
+            } else if let server, mcp.mustSignIn(server) {
+                HStack {
+                    Text("Sign in to \(server.name) to create tasks there.").foregroundStyle(.secondary)
+                    Button("Sign In…") { Task { await mcp.signIn(server); await load() } }
+                }
             } else if let err = mcp.status[serverID] {
                 Text(err).foregroundStyle(.red).font(.callout)
             }
@@ -172,16 +186,16 @@ struct CreateTaskSheet: View {
             Toggle("", isOn: Binding(get: { binding.wrappedValue == "true" }, set: { binding.wrappedValue = $0 ? "true" : "" })).labelsHidden()
             Spacer()
         } else {
-            TextField((prop["type"] as? String) ?? "", text: binding).textFieldStyle(.roundedBorder)
-            if let lookup = TaskMapping.lookupTool(for: key, in: tools) {
+            TextField(preset?.placeholders[key] ?? (prop["type"] as? String) ?? "", text: binding).textFieldStyle(.roundedBorder)
+            if let lookup = lookup(for: key) {
                 if let opts = options[key], !opts.isEmpty {
                     Menu("Choose") {
                         ForEach(opts, id: \.0) { id, label in Button("\(label)  (\(id))") { shared[key] = id } }
                     }
                     .fixedSize()
                 } else {
-                    Button(loadingField == key ? "Loading…" : "Look up") { Task { await lookUp(key, with: lookup) } }
-                        .disabled(loadingField != nil).help("Load choices with \(lookup.name)")
+                    Button(loadingField == key ? "Loading…" : "Look up") { Task { await lookUp(key, with: lookup.tool, spec: lookup.spec) } }
+                        .disabled(loadingField != nil).help("Load choices with \(lookup.tool.name)")
                 }
             }
         }
@@ -190,17 +204,18 @@ struct CreateTaskSheet: View {
     // MARK: actions
 
     private func load() async {
-        guard let server else { return }
+        guard let server, !mcp.mustSignIn(server) else { return }
         connecting = true
         tools = mcp.tools[server.id] ?? []
         if tools.isEmpty { tools = await mcp.connect(server) }
         connecting = false
-        toolName = server.taskTool ?? TaskMapping.suggestTaskTool(tools) ?? tools.first?.name ?? ""
+        toolName = [server.taskTool, preset?.taskTool, TaskMapping.suggestTaskTool(tools)].compactMap { $0 }.first { n in tools.contains { $0.name == n } }
+            ?? tools.first?.name ?? ""
         shared = server.taskDefaults
         options = [:]
     }
 
-    private func lookUp(_ key: String, with lookup: MCPTool) async {
+    private func lookUp(_ key: String, with lookup: MCPTool, spec: MCPPreset.Lookup?) async {
         guard let server else { return }
         loadingField = key
         defer { loadingField = nil }
@@ -209,9 +224,16 @@ struct CreateTaskSheet: View {
             if let v = shared[k], !v.isEmpty { args[k] = (p["type"] as? String == "integer" || p["type"] as? String == "number") ? (Int(v) as Any? ?? v) : v }
             if let e = p["enum"] as? [String], e.contains("json"), k.contains("format") { args[k] = "json" }
         }
+        // Preset parameters: top level if the tool declares them, else inside its `inputs` object (Atlassian's style).
+        var inputs: [String: Any] = [:]
+        for (param, field) in spec?.args ?? [:] {
+            guard let v = shared[field], !v.isEmpty else { continue }
+            if lookup.properties[param] != nil || lookup.properties["inputs"] == nil { args[param] = v } else { inputs[param] = v }
+        }
+        if !inputs.isEmpty { args["inputs"] = inputs }
         do {
             let text = try await mcp.call(server, lookup.name, args)
-            options[key] = TaskMapping.options(from: text)
+            options[key] = TaskMapping.options(from: text, value: spec?.value ?? "id")
             if options[key]?.isEmpty != false { mcp.status[server.id] = "\(lookup.name) returned nothing to choose from." }
         } catch {
             mcp.status[server.id] = error.localizedDescription
@@ -224,7 +246,8 @@ struct CreateTaskSheet: View {
         Task {
             for d in drafts where (results[d.id].map { (try? $0.get()) == nil } ?? true) {
                 do {
-                    let text = try await mcp.call(server, tool.name, TaskMapping.arguments(for: d, tool: tool, shared: shared))
+                    let args = preset?.taskTool == tool.name ? preset?.build?(d, shared) : nil
+                    let text = try await mcp.call(server, tool.name, args ?? TaskMapping.arguments(for: d, tool: tool, shared: shared))
                     results[d.id] = .success(text)
                     if let itemID = d.actionItemID,
                        var item = try? await model.store.db.read({ try ActionItem.fetchOne($0, key: itemID) }) {

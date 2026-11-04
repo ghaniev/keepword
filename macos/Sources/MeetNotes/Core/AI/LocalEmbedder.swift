@@ -62,7 +62,11 @@ actor LocalEmbedder {
 
 /// Where vectors come from: the built-in model (default), an OpenAI-compatible /embeddings server, or nowhere.
 enum Embedder {
-    static var source: String { UserDefaults.standard.string(forKey: "embeddingSource") ?? "local" }
+    static var source: String {
+        // The demo library is never indexed, so there is nothing to compare a query vector with.
+        if CommandLine.arguments.contains("--demo") { return "off" }
+        return UserDefaults.standard.string(forKey: "embeddingSource") ?? "local"
+    }
 
     /// Identifies the vector space; vectors from different models can't be compared, so a change means reindexing.
     static var modelID: String? {

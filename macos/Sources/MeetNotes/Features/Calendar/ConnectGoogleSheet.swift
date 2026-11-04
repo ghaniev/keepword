@@ -29,7 +29,7 @@ struct ConnectGoogleSheet: View {
             GroupBox {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("Or import with the secret iCal address", systemImage: "link").font(.headline)
-                    Text("Google Calendar on the web → Settings → your calendar → Integrate calendar → copy “Secret address in iCal format”. Read-only; MeetNotes refreshes it every 15 minutes. Keep the address private — it's stored in your Keychain.")
+                    Text("Google Calendar on the web → Settings → your calendar → Integrate calendar → copy “Secret address in iCal format”. Read-only; Keepword refreshes it every 15 minutes. Keep the address private — it's stored in your Keychain.")
                         .font(.callout).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     Button("Open Google Calendar Settings") { NSWorkspace.shared.open(URL(string: "https://calendar.google.com/calendar/r/settings")!) }
                         .buttonStyle(.link)

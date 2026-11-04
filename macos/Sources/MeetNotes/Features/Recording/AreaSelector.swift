@@ -2,7 +2,7 @@ import AppKit
 
 /// Full-screen transparent panel to drag a rectangle; release or Enter captures, Esc cancels.
 /// It's a non-activating panel so it takes keyboard focus even while the call app stays frontmost
-/// (the overlay button that opens it doesn't activate MeetNotes), and it's drawn with layers in AppKit
+/// (the overlay button that opens it doesn't activate Keepword), and it's drawn with layers in AppKit
 /// so dragging doesn't re-render a full-screen SwiftUI view on every mouse move.
 @MainActor
 final class AreaSelector {

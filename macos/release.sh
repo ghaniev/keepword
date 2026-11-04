@@ -1,5 +1,5 @@
 #!/bin/sh
-# Builds a distributable MeetNotes: Developer ID signature + hardened runtime, notarized and stapled DMG in dist/.
+# Builds a distributable Keepword: Developer ID signature + hardened runtime, notarized and stapled DMG in dist/.
 # One-time setup:
 #   1. Xcode → Settings → Accounts → your team → Manage Certificates → + Developer ID Application
 #   2. xcrun notarytool store-credentials meetnotes-notary --apple-id <apple id> --team-id <team id>
@@ -16,11 +16,11 @@ SIGN_IDENTITY="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | gre
 SIGN_IDENTITY="$SIGN_IDENTITY" VERSION="$VERSION" ./build_app.sh
 
 DIST=dist && mkdir -p "$DIST"
-DMG="$DIST/MeetNotes-$VERSION.dmg"
-STAGE="$(mktemp -d)/MeetNotes"
-mkdir -p "$STAGE" && cp -R MeetNotes.app "$STAGE/" && ln -s /Applications "$STAGE/Applications"
+DMG="$DIST/Keepword-$VERSION.dmg"
+STAGE="$(mktemp -d)/Keepword"
+mkdir -p "$STAGE" && cp -R Keepword.app "$STAGE/" && ln -s /Applications "$STAGE/Applications"
 rm -f "$DMG"
-hdiutil create -volname "MeetNotes $VERSION" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov "$DMG"
+hdiutil create -volname "Keepword $VERSION" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov "$DMG"
 codesign --force --timestamp --sign "$SIGN_IDENTITY" "$DMG"
 
 xcrun notarytool submit "$DMG" --keychain-profile "$NOTARY_PROFILE" --wait

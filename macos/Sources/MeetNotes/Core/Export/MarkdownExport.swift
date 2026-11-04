@@ -61,7 +61,7 @@ enum MarkdownExport {
         for s in try store.segments(of: id) where !s.irrelevant {
             md += "**\(store.root(s.speakerId, in: all)?.name ?? "?")** [\(timestamp(s.start))]: \(s.text)\n\n"
         }
-        md += "*Exported from MeetNotes on \(Date.now.formatted(date: .abbreviated, time: .shortened))*\n"
+        md += "*Exported from Keepword on \(Date.now.formatted(date: .abbreviated, time: .shortened))*\n"
         return md
     }
 

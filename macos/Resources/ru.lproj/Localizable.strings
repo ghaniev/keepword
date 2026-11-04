@@ -1,4 +1,4 @@
-/* MeetNotes — Russian. Keys are the English UI strings. */
+/* Keepword — Russian. Keys are the English UI strings. */
 " · voice profile saved" = " · голосовой профиль сохранён";
 "%@ downloaded" = "%@ загружена";
 "%@ for “%@”" = "%@ по запросу «%@»";
@@ -18,8 +18,6 @@
 "Action items appear here after meetings are summarized." = "Задачи появятся здесь после суммаризации встреч.";
 "Add Bookmark" = "Добавить закладку";
 "Add Bookmark Here" = "Добавить закладку здесь";
-"Add Kaiten…" = "Добавить Kaiten…";
-"Add Server…" = "Добавить сервер…";
 "Add action item" = "Добавить задачу";
 "Add bookmark" = "Добавить закладку";
 "Add tag" = "Добавить тег";
@@ -110,7 +108,7 @@
 "Copy attachments next to the exported note" = "Копировать вложения рядом с экспортированной заметкой";
 "Copy command" = "Скопировать команду";
 "Copy configuration" = "Скопировать конфигурацию";
-"Couldn't capture screenshot: %@. Allow MeetNotes in System Settings → Privacy & Security → Screen & System Audio Recording." = "Не удалось сделать снимок экрана: %@. Разрешите MeetNotes в Системных настройках → Конфиденциальность и безопасность → Запись экрана и системного звука.";
+"Couldn't capture screenshot: %@. Allow Keepword in System Settings → Privacy & Security → Screen & System Audio Recording." = "Не удалось сделать снимок экрана: %@. Разрешите Keepword в Системных настройках → Конфиденциальность и безопасность → Запись экрана и системного звука.";
 "Create %lld Tasks" = "Создать задачи: %lld";
 "Create Task" = "Создать задачу";
 "Create Task in %@…" = "Создать задачу в %@…";
@@ -185,7 +183,7 @@
 "Good evening" = "Добрый вечер";
 "Good morning" = "Доброе утро";
 "Google Calendar" = "Google Календарь";
-"Google Calendar on the web → Settings → your calendar → Integrate calendar → copy “Secret address in iCal format”. Read-only; MeetNotes refreshes it every 15 minutes. Keep the address private — it's stored in your Keychain." = "Google Календарь в браузере → Настройки → ваш календарь → Интеграция календаря → скопируйте «Закрытый адрес в формате iCal». Только чтение; MeetNotes обновляет его каждые 15 минут. Не делитесь адресом — он хранится в Связке ключей.";
+"Google Calendar on the web → Settings → your calendar → Integrate calendar → copy “Secret address in iCal format”. Read-only; Keepword refreshes it every 15 minutes. Keep the address private — it's stored in your Keychain." = "Google Календарь в браузере → Настройки → ваш календарь → Интеграция календаря → скопируйте «Закрытый адрес в формате iCal». Только чтение; Keepword обновляет его каждые 15 минут. Не делитесь адресом — он хранится в Связке ключей.";
 "HTTP" = "HTTP";
 "Headers (Name: value per line, stored in Keychain)" = "Заголовки (Имя: значение построчно, хранятся в Связке ключей)";
 "Hide" = "Скрыть";
@@ -196,7 +194,7 @@
 "Identify Speakers…" = "Определить спикеров…";
 "Identify speakers" = "Определить спикеров";
 "Identifying speakers…" = "Определение спикеров…";
-"If you choose a cloud provider, MeetNotes sends text transcripts of your calls, including participant names and meeting titles, to that provider to generate insights. Recorded audio never leaves your Mac." = "Если выбрать облачного провайдера, MeetNotes отправляет ему текстовые транскрипты звонков, включая имена участников и названия встреч, чтобы получить инсайты. Аудиозаписи никогда не покидают ваш Mac.";
+"If you choose a cloud provider, Keepword sends text transcripts of your calls, including participant names and meeting titles, to that provider to generate insights. Recorded audio never leaves your Mac." = "Если выбрать облачного провайдера, Keepword отправляет ему текстовые транскрипты звонков, включая имена участников и названия встреч, чтобы получить инсайты. Аудиозаписи никогда не покидают ваш Mac.";
 "Ignored Apps" = "Игнорируемые приложения";
 "Import" = "Импорт";
 "Import Audio/Video…" = "Импорт аудио/видео…";
@@ -214,7 +212,6 @@
 "Join" = "Подключиться";
 "Join & Record" = "Подключиться и записать";
 "Jot down notes during the meeting…" = "Записывайте заметки во время встречи…";
-"Kaiten: KAITEN_API_URL=https://<company>.kaiten.ru/api/latest, KAITEN_API_TOKEN=<profile → API key>, optional KAITEN_DEFAULT_SPACE_ID=<id>. Build the server first: npm install && npm run build." = "Kaiten: KAITEN_API_URL=https://<компания>.kaiten.ru/api/latest, KAITEN_API_TOKEN=<профиль → API-ключ>, необязательно KAITEN_DEFAULT_SPACE_ID=<id>. Сначала соберите сервер: npm install && npm run build.";
 "Keep Recording" = "Продолжить запись";
 "Key Insights" = "Ключевые инсайты";
 "Key Insights — what to pay attention to" = "Ключевые инсайты — на что обратить внимание";
@@ -245,14 +242,14 @@
 "Lower merges more voices into known people; raise it if different people get the same name." = "Ниже — больше голосов сливается с известными людьми; выше — если разным людям даётся одно имя.";
 "MCP Server" = "MCP-сервер";
 "MCP server failed: %@" = "Ошибка MCP-сервера: %@";
-"MCP servers (MeetNotes as client)" = "MCP-серверы (MeetNotes как клиент)";
+"MCP servers (Keepword as client)" = "MCP-серверы (Keepword как клиент)";
 "Manual" = "Вручную";
 "Mark as completed" = "Отметить выполненной";
 "Mark as incomplete" = "Отметить невыполненной";
 "Markdown Export" = "Экспорт в Markdown";
 "Maximum privacy" = "Максимальная приватность";
-"MeetNotes" = "MeetNotes";
-"MeetNotes can't read your calendars. Turn MeetNotes on in System Settings → Privacy & Security → Calendars." = "MeetNotes не может читать ваши календари. Включите MeetNotes в Системных настройках → Конфиденциальность и безопасность → Календари.";
+"Keepword" = "Keepword";
+"Keepword can't read your calendars. Turn Keepword on in System Settings → Privacy & Security → Calendars." = "Keepword не может читать ваши календари. Включите Keepword в Системных настройках → Конфиденциальность и безопасность → Календари.";
 "Meeting period" = "Период встреч";
 "Meetings" = "Встречи";
 "Menu Bar & Dock" = "Строка меню и Dock";
@@ -277,7 +274,6 @@
 "New speakers detected — identify them to generate the summary" = "Обнаружены новые спикеры — назовите их, чтобы создать саммари";
 "Next week" = "Следующая неделя";
 "No Documents" = "Нет документов";
-"No MCP servers yet. Add one to create tasks in Kaiten, Jira, Linear… from action items and notes." = "MCP-серверов пока нет. Добавьте сервер, чтобы ставить задачи в Kaiten, Jira, Linear… прямо из задач и заметок.";
 "No Recently Deleted Notes" = "Нет недавно удалённых заметок";
 "No action items yet" = "Задач пока нет";
 "No chats yet" = "Чатов пока нет";
@@ -305,7 +301,7 @@
 "Open Google Calendar Settings" = "Открыть настройки Google Календаря";
 "Open Internet Accounts" = "Открыть учётные записи интернета";
 "Open Internet Accounts (add Google, Exchange…)" = "Открыть учётные записи интернета (Google, Exchange…)";
-"Open MeetNotes" = "Открыть MeetNotes";
+"Open Keepword" = "Открыть Keepword";
 "Open Privacy Settings" = "Открыть настройки конфиденциальности";
 "Open action items" = "Открытые задачи";
 "Open linked document" = "Открыть связанный документ";
@@ -325,7 +321,7 @@
 "Point this at an Obsidian or Logseq vault. Files are named by date and title and replaced when a meeting is renamed." = "Укажите хранилище Obsidian или Logseq. Файлы называются по дате и названию и заменяются при переименовании встречи.";
 "Port" = "Порт";
 "Position" = "Должность";
-"Press Record (⌘R) when a call starts. MeetNotes captures your microphone and the other participants through system audio — no bot joins the call." = "Нажмите «Запись» (⌘R), когда начнётся звонок. MeetNotes записывает ваш микрофон и других участников через системный звук — бот к звонку не подключается.";
+"Press Record (⌘R) when a call starts. Keepword captures your microphone and the other participants through system audio — no bot joins the call." = "Нажмите «Запись» (⌘R), когда начнётся звонок. Keepword записывает ваш микрофон и других участников через системный звук — бот к звонку не подключается.";
 "Press ⌘R to record a call, or drop an audio/video file here." = "Нажмите ⌘R, чтобы записать звонок, или перетащите сюда аудио/видеофайл.";
 "Previous meetings" = "Прошлые встречи";
 "Previous week" = "Предыдущая неделя";
@@ -362,7 +358,7 @@
 "Rename “%@”…" = "Переименовать «%@»…";
 "Repeat" = "Повтор";
 "Reset to Default" = "Сбросить по умолчанию";
-"Restart MeetNotes to apply." = "Перезапустите MeetNotes, чтобы применить.";
+"Restart Keepword to apply." = "Перезапустите Keepword, чтобы применить.";
 "Restart Now" = "Перезапустить";
 "Restore" = "Восстановить";
 "Restore Original Text" = "Восстановить исходный текст";
@@ -373,7 +369,6 @@
 "Run now" = "Запустить сейчас";
 "Runs Qwen with llama.cpp on this Mac's GPU. The model unloads after 5 idle minutes to free memory." = "Запускает Qwen через llama.cpp на GPU этого Mac. Модель выгружается после 5 минут простоя, чтобы освободить память.";
 "Runs on the Neural Engine. Models download on first use (~0.6 GB) and never leave this Mac." = "Работает на Neural Engine. Модели скачиваются при первом использовании (~0,6 ГБ) и не покидают этот Mac.";
-"Same format as Claude Desktop: a command with arguments and environment variables, or an HTTP URL. Tokens are stored in the Keychain." = "Тот же формат, что в Claude Desktop: команда с аргументами и переменными окружения или HTTP URL. Токены хранятся в Связке ключей.";
 "Same person as %@" = "Тот же человек, что %@";
 "Save" = "Сохранить";
 "Save Changes" = "Сохранить изменения";
@@ -451,7 +446,7 @@
 "Template Name" = "Название шаблона";
 "Test" = "Проверить";
 "Test Connection" = "Проверить подключение";
-"The microphone is delivering silence — macOS is blocking it. Turn MeetNotes on in System Settings → Privacy & Security → Microphone (rebuilt copies may need it again)." = "Микрофон передаёт тишину — macOS его блокирует. Включите MeetNotes в Системных настройках → Конфиденциальность и безопасность → Микрофон (пересобранным копиям может понадобиться снова).";
+"The microphone is delivering silence — macOS is blocking it. Turn Keepword on in System Settings → Privacy & Security → Microphone (rebuilt copies may need it again)." = "Микрофон передаёт тишину — macOS его блокирует. Включите Keepword в Системных настройках → Конфиденциальность и безопасность → Микрофон (пересобранным копиям может понадобиться снова).";
 "The transcript and notes are kept. Audio files cannot be recovered once deleted." = "Транскрипт и заметки сохранятся. Удалённые аудиофайлы восстановить нельзя.";
 "The voice is remembered: future meetings will use this name." = "Голос запомнен: в будущих встречах будет использоваться это имя.";
 "Their transcript lines become unassigned." = "Их реплики в транскриптах останутся без спикера.";
@@ -485,7 +480,7 @@
 "Week" = "Неделя";
 "Weekly" = "Еженедельно";
 "Weekly decisions" = "Решения недели";
-"Welcome to MeetNotes" = "Добро пожаловать в MeetNotes";
+"Welcome to Keepword" = "Добро пожаловать в Keepword";
 "Work week" = "Рабочая неделя";
 "Works offline" = "Работает офлайн";
 "all-day" = "весь день";
@@ -493,7 +488,7 @@
 "https://…/mcp" = "https://…/mcp";
 "macOS Calendars" = "Календари macOS";
 "node, npx, uvx or a full path" = "node, npx, uvx или полный путь";
-"paraphrase-multilingual-MiniLM-L12-v2: 50+ languages including Russian, runs on this Mac, no key. Downloaded once (~470 MB) into the MeetNotes library." = "paraphrase-multilingual-MiniLM-L12-v2: 50+ языков, включая русский, работает на этом Mac, без ключа. Скачивается один раз (~470 МБ) в библиотеку MeetNotes.";
+"paraphrase-multilingual-MiniLM-L12-v2: 50+ languages including Russian, runs on this Mac, no key. Downloaded once (~470 MB) into the Keepword library." = "paraphrase-multilingual-MiniLM-L12-v2: 50+ языков, включая русский, работает на этом Mac, без ключа. Скачивается один раз (~470 МБ) в библиотеку Keepword.";
 "tag" = "тег";
 "the last %lld days" = "последние %lld дн.";
 "today" = "сегодня";
@@ -527,7 +522,7 @@
 "Permissions" = "Разрешения";
 "Permissions…" = "Разрешения…";
 "Recording needs the microphone and system audio; the rest is optional. Recordings and transcripts stay on this Mac." = "Для записи нужны микрофон и звук системы, остальное — по желанию. Записи и транскрипты остаются на этом Mac.";
-"After you turn on Screen or System Audio Recording in System Settings, macOS may ask to reopen MeetNotes." = "После включения записи экрана или звука системы в Системных настройках macOS может попросить перезапустить MeetNotes.";
+"After you turn on Screen or System Audio Recording in System Settings, macOS may ask to reopen Keepword." = "После включения записи экрана или звука системы в Системных настройках macOS может попросить перезапустить Keepword.";
 "Open at launch while something required is missing" = "Открывать при запуске, пока не хватает обязательных";
 "Required" = "Обязательно";
 "Allowed" = "Разрешено";
@@ -599,3 +594,44 @@
 "Not enough disk space for %@ (%@)." = "Недостаточно места на диске для %@ (%@).";
 "Download of %@ failed: %@" = "Не удалось скачать %@: %@";
 "%@ isn't downloaded. Download it in Settings → Transcription." = "%@ не скачана. Скачайте её в Настройках → Транскрибация.";
+"Start In-Person Meeting" = "Начать очную встречу";
+"Records the microphone only, for a meeting in the room" = "Записывает только микрофон — для встречи в одной комнате";
+"Open “%@”" = "Открыть «%@»";
+"Ask Keepword…" = "Спросить Keepword…";
+"Add action item, e.g. “Send the deck tomorrow @Anna”" = "Добавить задачу, например «Отправить презентацию завтра @Анна»";
+"Needs Attention" = "Требует внимания";
+"Nothing needs your attention." = "Ничего не требует внимания.";
+"No summary yet" = "Саммари ещё нет";
+"Brief" = "Бриф";
+"Write AI Brief" = "Написать бриф с ИИ";
+"Writing brief…" = "Пишу бриф…";
+"Earlier Meetings" = "Прошлые встречи";
+"Open Action Items" = "Открытые задачи";
+"Sign in to %@ to use it." = "Войдите в %@, чтобы пользоваться им.";
+"%@ doesn't register apps automatically. Create an OAuth app in its developer settings with the redirect URL %@ and enter its client ID and secret." = "%@ не регистрирует приложения автоматически. Создайте OAuth-приложение в настройках разработчика с адресом перенаправления %@ и укажите его Client ID и секрет.";
+"Signed in. You can close this tab and return to Keepword." = "Вход выполнен. Закройте эту вкладку и вернитесь в Keepword.";
+"Sign-in failed. Return to Keepword for details." = "Войти не удалось. Подробности в Keepword.";
+"Port %@ for the sign-in redirect is busy. Close the app that uses it and try again." = "Порт %@ для входа занят. Закройте приложение, которое его использует, и попробуйте снова.";
+"Sign-in timed out." = "Время на вход истекло.";
+"Atlassian's Rovo MCP server. Sign in with your Atlassian account; an admin may need to allow MCP access first. Choose the site, project and work type once, Keepword remembers them." = "MCP-сервер Atlassian Rovo. Войдите через аккаунт Atlassian; возможно, администратору сначала нужно разрешить доступ к MCP. Сайт, проект и тип задачи выбираются один раз, Keepword их запомнит.";
+"Linear's MCP server. Sign in with your Linear account, or switch to headers and paste an API key as “Authorization: Bearer <key>”." = "MCP-сервер Linear. Войдите через аккаунт Linear или переключитесь на заголовки и вставьте API-ключ как «Authorization: Bearer <ключ>».";
+"Notion's MCP server. Each action item becomes a page under the page you choose." = "MCP-сервер Notion. Каждая задача станет страницей внутри выбранной страницы.";
+"Asana's MCP server needs an OAuth app: create an MCP app at app.asana.com/0/my-apps, add the redirect URL below, make it available to your workspace, then paste its client ID and secret." = "Для MCP-сервера Asana нужно OAuth-приложение: создайте MCP-приложение на app.asana.com/0/my-apps, добавьте адрес перенаправления ниже, откройте приложению доступ к рабочему пространству и вставьте его Client ID и секрет.";
+"Miro's MCP server. Sign in and pick a team. Miro adds items to boards with its own tools; choose one under “Create tasks with”." = "MCP-сервер Miro. Войдите и выберите команду. Miro добавляет элементы на доски своими инструментами; выберите нужный в поле «Создавать задачи через».";
+"Notion page link (empty: a private page)" = "Ссылка на страницу Notion (пусто — личная страница)";
+"No services yet. Add Jira, Linear, Notion or another MCP server to create tasks from action items and notes." = "Сервисов пока нет. Добавьте Jira, Linear, Notion или другой MCP-сервер, чтобы создавать задачи из встреч и заметок.";
+"Sign In…" = "Войти…";
+"Add" = "Добавить";
+"Other MCP Server…" = "Другой MCP-сервер…";
+"Jira, Linear, Notion, Asana and Miro sign in through the browser. Any other MCP server works too: a command with arguments and environment variables, or an HTTP URL, in the same format as Claude Desktop. Tokens are stored in the Keychain." = "Jira, Linear, Notion, Asana и Miro подключаются через вход в браузере. Подойдёт и любой другой MCP-сервер: команда с аргументами и переменными окружения или HTTP-адрес, в том же формате, что у Claude Desktop. Токены хранятся в Связке ключей.";
+"Sign-in" = "Вход";
+"Browser (OAuth)" = "Через браузер (OAuth)";
+"Token in headers" = "Токен в заголовках";
+"Client ID" = "Client ID";
+"Client secret" = "Секрет клиента";
+"Optional" = "Необязательно";
+"Only for services that don't register apps automatically. Use the redirect URL %@." = "Нужно только сервисам, которые не регистрируют приложения автоматически. Адрес перенаправления: %@.";
+"Sign Out" = "Выйти";
+"Sign In and Test" = "Войти и проверить";
+"Waiting for the browser…" = "Ждём вход в браузере…";
+"Sign in to %@ to create tasks there." = "Войдите в %@, чтобы создавать там задачи.";

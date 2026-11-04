@@ -155,10 +155,12 @@ struct SummaryTab: View {
                 }
             }
             ForEach(items) { a in ActionItemRow(item: a) }
-            TextField("Add action item", text: $newItem).textFieldStyle(.plain).font(.system(size: 12.5)).foregroundStyle(.secondary)
+            TextField("Add action item, e.g. “Send the deck tomorrow @Anna”", text: $newItem).textFieldStyle(.plain).font(.system(size: 12.5)).foregroundStyle(.secondary)
                 .onSubmit {
                     guard !newItem.isEmpty else { return }
-                    try? model.store.saveActionItem(ActionItem(meetingId: meeting.id, text: newItem))
+                    let t = TaskText.parse(newItem)
+                    let assignee = t.assignee.map { TaskText.resolve($0, among: people.map(\.name)) }
+                    try? model.store.saveActionItem(ActionItem(meetingId: meeting.id, text: t.text, assignee: assignee, dueDate: t.dueDate))
                     newItem = ""
                 }
                 .padding(.leading, 22)

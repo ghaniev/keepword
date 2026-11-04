@@ -1,6 +1,6 @@
-# MeetNotes for Windows
+# Keepword for Windows
 
-Windows version of MeetNotes; the macOS app is in [`../macos`](../macos). Plan and status: [PLAN.md](PLAN.md).
+Windows version of Keepword; the macOS app is in [`../macos`](../macos). Plan and status: [PLAN.md](PLAN.md).
 
 ## Build on Windows
 One-time setup (Windows 10 2004+ / 11, x64):
@@ -32,6 +32,8 @@ Native checks from the repository root:
 For an isolated library, launch `meetnotes.exe --library-path C:\path\to\test-library`.
 Closing the main window leaves the app in the tray; choose **Quit** there to exit and finalize recordings.
 WAV headers are checkpointed every recorded second for recovery after a process crash. This does not guarantee recovery after power loss.
+
+Settings → Integrations adds Jira, Linear, Notion, Asana and Miro with a browser sign-in (OAuth); tokens are kept in Windows Credential Manager. Other MCP servers go into the same JSON list.
 
 Current scope: recording, local/cloud transcription, speaker identification, AI notes, filtered hybrid search/chat, organization, hourly ICS calendar, MCP integrations, monitor/area capture and a macOS-style interface using the original app icon. See [PLAN.md](PLAN.md) for per-phase implementation and acceptance gates.
 

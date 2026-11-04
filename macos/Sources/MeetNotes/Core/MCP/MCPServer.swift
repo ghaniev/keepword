@@ -159,7 +159,7 @@ enum MCPHandler {
         case "initialize":
             return ok(["protocolVersion": params["protocolVersion"] as? String ?? "2025-06-18",
                        "capabilities": ["tools": ["listChanged": false]],
-                       "serverInfo": ["name": "MeetNotes", "version": "0.3"],
+                       "serverInfo": ["name": "Keepword", "version": "0.3"],
                        "instructions": "Search the user's recorded meetings with search_meetings or list_meetings, then read them with get_summary or get_transcript."])
         case "ping": return ok([String: Any]())
         case "tools/list": return ok(["tools": tools])

@@ -45,4 +45,26 @@
       <key>other</key><string>%lld результатов</string>
     </dict>
   </dict>
+  <key>%lld earlier meetings</key><dict>
+    <key>NSStringLocalizedFormatKey</key><string>%#@n@</string>
+    <key>n</key><dict>
+      <key>NSStringFormatSpecTypeKey</key><string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key><string>lld</string>
+      <key>one</key><string>%lld прошлая встреча</string>
+      <key>few</key><string>%lld прошлые встречи</string>
+      <key>many</key><string>%lld прошлых встреч</string>
+      <key>other</key><string>%lld прошлых встреч</string>
+    </dict>
+  </dict>
+  <key>%lld open action items</key><dict>
+    <key>NSStringLocalizedFormatKey</key><string>%#@n@</string>
+    <key>n</key><dict>
+      <key>NSStringFormatSpecTypeKey</key><string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key><string>lld</string>
+      <key>one</key><string>%lld открытая задача</string>
+      <key>few</key><string>%lld открытые задачи</string>
+      <key>many</key><string>%lld открытых задач</string>
+      <key>other</key><string>%lld открытых задач</string>
+    </dict>
+  </dict>
 </dict></plist>

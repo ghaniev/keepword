@@ -23,12 +23,12 @@ ALTER TABLE meetings ADD COLUMN expected_speakers INTEGER;
 INSERT INTO grdb_migrations VALUES ('v4_task_refs'),('v5_diarization');
 ''')
 now = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S.000')
-db.execute("INSERT INTO folders(id,name,created_at) VALUES('project','MeetNotes',?)", (now,))
+db.execute("INSERT INTO folders(id,name,created_at) VALUES('project','Keepword',?)", (now,))
 db.execute("INSERT INTO templates(id,name,insights_prompt,actions_prompt,is_default,builtin) VALUES('general','General Meeting','List decisions, risks and open questions.','Only explicit commitments, with owners and deadlines.',1,1)")
 for identifier, name in [('me', 'Я'), ('alice', 'Алиса')]:
     db.execute("INSERT INTO speakers(id,name,embedding,embedding_model,created_at) VALUES(?,?,'[]','',?)", (identifier, name, now))
 for identifier, title, summary, deleted in [
-    ('11111111-1111-4111-8111-111111111111', 'Планирование Windows', 'Команда обсудила перенос MeetNotes на Windows. Алиса подготовит заметки и установщик.', None),
+    ('11111111-1111-4111-8111-111111111111', 'Планирование Windows', 'Команда обсудила перенос Keepword на Windows. Алиса подготовит заметки и установщик.', None),
     ('22222222-2222-4222-8222-222222222222', 'Локальный поиск и AI', 'Распознавание, поиск и саммари работают на устройстве.', None),
     ('33333333-3333-4333-8333-333333333333', 'Удалённая заметка', 'Демонстрация корзины.', now),
 ]:

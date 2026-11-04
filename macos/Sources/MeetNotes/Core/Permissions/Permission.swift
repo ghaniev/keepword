@@ -2,7 +2,7 @@ import AVFoundation
 import AppKit
 import EventKit
 
-/// macOS privacy permissions MeetNotes uses: current status and how to ask for each.
+/// macOS privacy permissions Keepword uses: current status and how to ask for each.
 enum Permission: String, CaseIterable, Identifiable {
     case microphone, systemAudio, screenRecording, calendar, reminders
     var id: Self { self }

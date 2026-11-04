@@ -119,7 +119,7 @@ enum DevCommands {
             exit(0)
         }
         if let i = CommandLine.arguments.firstIndex(of: "--calendar-diag"), i + 1 < CommandLine.arguments.count {
-            // Writes calendar access state and counts to a file (launch via `open` so macOS checks MeetNotes' own permission).
+            // Writes calendar access state and counts to a file (launch via `open` so macOS checks Keepword' own permission).
             let store = EKEventStore()
             let status = EKEventStore.authorizationStatus(for: .event)
             var lines = ["status=\(status.rawValue) (0 notDetermined, 1 restricted, 2 denied, 3 fullAccess, 4 writeOnly)"]

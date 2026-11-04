@@ -35,7 +35,7 @@ function Shell({language,onLanguage}:{language:string;onLanguage:(s:string)=>voi
  async function newNote(){try{const id=await call<string>('new_note',{title:t('New note')});open(id);refresh()}catch(e){setError(String(e))}}
  return <div className="root">
   <aside className="sidebar" aria-label={t('Navigation')}>
-   <div className="brand"><img className="brand-icon" src={appIcon} alt=""/><strong>MeetNotes</strong></div>
+   <div className="brand"><img className="brand-icon" src={appIcon} alt=""/><strong>Keepword</strong></div>
    <div className="record-row">
     <button className={recording?'record on':'record'} disabled={busy} onClick={toggle}><Icon name={recording?'stop':'record'}/>{busy?t('Please wait…'):recording?timestamp(recording.elapsed):t('Record')}</button>
     <button className="import-button" title={t('Import')} aria-label={t('Import')} onClick={importMedia}><Icon name="import"/></button>

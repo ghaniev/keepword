@@ -96,7 +96,7 @@ pub fn server(app: AppHandle) -> Res<()> {
 fn dispatch(app: &AppHandle, m: &Value) -> Res<Value> {
     match m["method"].as_str().unwrap_or("") {
         "initialize" => Ok(
-            json!({"protocolVersion":PROTOCOL,"capabilities":{"tools":{}},"serverInfo":{"name":"MeetNotes","version":env!("CARGO_PKG_VERSION")}}),
+            json!({"protocolVersion":PROTOCOL,"capabilities":{"tools":{}},"serverInfo":{"name":"Keepword","version":env!("CARGO_PKG_VERSION")}}),
         ),
         "ping" => Ok(json!({})),
         "tools/list" => Ok(json!({"tools":[
@@ -153,6 +153,7 @@ enum Transport {
         url: String,
         headers: std::collections::BTreeMap<String, String>,
         session: Option<String>,
+        oauth: Option<(String, String)>, // server id and name, for browser sign-in tokens
     },
 }
 pub struct Client {
@@ -164,10 +165,15 @@ impl Client {
         let secrets =
             settings::server_secrets(config["id"].as_str().ok_or("MCP server needs an id")?)?;
         let transport = if config["transport"] == "http" {
+            let oauth = (config["auth"] == "oauth").then(|| {
+                let id = config["id"].as_str().unwrap_or_default().to_string();
+                (id.clone(), config["name"].as_str().unwrap_or(&id).to_string())
+            });
             Transport::Http {
                 url: config["url"].as_str().ok_or("MCP URL is missing")?.into(),
-                headers: secrets,
+                headers: if oauth.is_some() { Default::default() } else { secrets },
                 session: None,
+                oauth,
             }
         } else {
             let executable = config["command"].as_str().ok_or("MCP command is missing")?;
@@ -227,7 +233,7 @@ impl Client {
             }
         };
         let mut client = Self { transport, next: 1 };
-        client.request("initialize",json!({"protocolVersion":PROTOCOL,"capabilities":{},"clientInfo":{"name":"MeetNotes","version":"0.1.0"}}))?;
+        client.request("initialize",json!({"protocolVersion":PROTOCOL,"capabilities":{},"clientInfo":{"name":"Keepword","version":"0.1.0"}}))?;
         client.notify("notifications/initialized", json!({}))?;
         Ok(client)
     }
@@ -259,22 +265,39 @@ impl Client {
                 url,
                 headers,
                 session,
+                oauth,
             } => {
-                let mut request = reqwest::blocking::Client::builder()
-                    .timeout(Duration::from_secs(120))
-                    .build()
-                    .map_err(err)?
-                    .post(url.as_str())
-                    .header("Accept", "application/json, text/event-stream")
-                    .header("MCP-Protocol-Version", PROTOCOL)
-                    .json(message);
-                for (k, v) in headers.iter() {
-                    request = request.header(k, v);
-                }
-                if let Some(id) = session {
-                    request = request.header("Mcp-Session-Id", id.as_str());
-                }
-                let response = request.send().map_err(err)?;
+                let mut retried = false;
+                let response = loop {
+                    let mut request = reqwest::blocking::Client::builder()
+                        .timeout(Duration::from_secs(120))
+                        .build()
+                        .map_err(err)?
+                        .post(url.as_str())
+                        .header("Accept", "application/json, text/event-stream")
+                        .header("MCP-Protocol-Version", PROTOCOL)
+                        .json(message);
+                    for (k, v) in headers.iter() {
+                        request = request.header(k, v);
+                    }
+                    if let Some(id) = session {
+                        request = request.header("Mcp-Session-Id", id.as_str());
+                    }
+                    if let Some((id, name)) = oauth.as_ref() {
+                        let token = crate::oauth::access_token(id, retried)?
+                            .ok_or_else(|| crate::oauth::sign_in_required(name))?;
+                        request = request.bearer_auth(token);
+                    }
+                    let response = request.send().map_err(err)?;
+                    if response.status().as_u16() == 401 {
+                        match oauth.as_ref() {
+                            Some(_) if !retried => { retried = true; continue; } // expired early: refresh once
+                            Some((_, name)) => return Err(crate::oauth::sign_in_required(name)),
+                            None => return Err("MCP HTTP 401: the server rejected the token. Check the headers.".into()),
+                        }
+                    }
+                    break response;
+                };
                 let status = response.status();
                 if !status.is_success() {
                     return Err(format!("MCP HTTP {status}"));

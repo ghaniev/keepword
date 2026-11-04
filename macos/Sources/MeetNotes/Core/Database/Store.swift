@@ -293,6 +293,11 @@ final class Store {
 
     func meeting(_ id: String) -> Meeting? { try? db.read { try Meeting.fetchOne($0, key: id) } }
 
+    /// The newest meeting outside the trash (the menu bar asks on every redraw, so one row only).
+    func latestMeeting() -> Meeting? {
+        try? db.read { try Meeting.filter(sql: "deleted_at IS NULL").order(sql: "created_at DESC").fetchOne($0) }
+    }
+
     func save(_ meeting: Meeting) throws {
         var m = meeting
         m.modifiedAt = .now

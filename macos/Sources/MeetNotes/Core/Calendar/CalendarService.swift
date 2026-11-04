@@ -59,6 +59,7 @@ final class CalendarService: ObservableObject {
     private var window = DateInterval(start: Calendar.current.startOfDay(for: .now).addingTimeInterval(-7 * 86400), duration: 35 * 86400)
     private var observer: NSObjectProtocol?
     private var feedTimer: Timer?
+    private var demo = false
 
     var authorized: Bool { status == .fullAccess }
     var canRead: Bool { authorized || !feeds.isEmpty || !feedEvents.isEmpty }
@@ -89,9 +90,10 @@ final class CalendarService: ObservableObject {
         refresh()
     }
 
-    /// Sample events for `--demo`.
+    /// Sample events for `--demo`. They replace the Mac's calendars and feeds, so no real event shows up in a demo or a screenshot.
     func useDemoEvents(_ events: [CalEvent]) {
-        feedEvents["demo"] = events
+        demo = true
+        feedEvents = ["demo": events]
         refresh()
     }
 
@@ -106,14 +108,14 @@ final class CalendarService: ObservableObject {
         let soon = DateInterval(start: today, end: today.addingTimeInterval(2 * 86400))
         func load(_ i: DateInterval) -> [CalEvent] {
             var out: [CalEvent] = []
-            if authorized {
+            if authorized && !demo {
                 let hidden = Set(UserDefaults.standard.stringArray(forKey: "hiddenCalendars") ?? [])
                 let cals = store.calendars(for: .event).filter { !hidden.contains($0.calendarIdentifier) }
                 if !cals.isEmpty {
                     out += store.events(matching: store.predicateForEvents(withStart: i.start, end: i.end, calendars: cals)).map(CalEvent.init)
                 }
             }
-            out += feedEvents.values.joined().filter { $0.end > i.start && $0.start < i.end }
+            out += (demo ? feedEvents["demo"] ?? [] : Array(feedEvents.values.joined())).filter { $0.end > i.start && $0.start < i.end }
             // The same meeting can arrive from macOS and from a feed; keep one.
             var seen = Set<String>()
             return out.filter { seen.insert("\($0.title)|\(Int($0.start.timeIntervalSince1970))").inserted }

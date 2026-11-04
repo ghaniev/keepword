@@ -2,7 +2,7 @@ import AppKit
 import ScreenCaptureKit
 
 /// Screenshots during a call: the whole screen under the mouse, or a dragged area.
-/// MeetNotes' own windows (overlay, main window) are excluded from the image.
+/// Keepword' own windows (overlay, main window) are excluded from the image.
 @MainActor
 enum ScreenCapture {
     static func capture(area: Bool) async throws -> URL {

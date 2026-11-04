@@ -9,7 +9,7 @@ struct IntegrationsSettings: View {
         Form {
             Section {
                 if mcp.servers.isEmpty {
-                    Text("No MCP servers yet. Add one to create tasks in Kaiten, Jira, Linear… from action items and notes.")
+                    Text("No services yet. Add Jira, Linear, Notion or another MCP server to create tasks from action items and notes.")
                         .foregroundStyle(.secondary)
                 }
                 ForEach(mcp.servers) { s in
@@ -25,35 +25,30 @@ struct IntegrationsSettings: View {
                             .font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Button("Test") { Task { await mcp.connect(s) } }
+                        if mcp.signingIn == s.id { ProgressView().controlSize(.small) }
+                        else if mcp.mustSignIn(s) { Button("Sign In…") { Task { await mcp.signIn(s) } } }
+                        else { Button("Test") { Task { await mcp.connect(s) } } }
                         Button("Edit") { editing = s }
                         Button(role: .destructive) { mcp.remove(s) } label: { Image(systemName: "trash") }.buttonStyle(.borderless)
                     }
                 }
-                HStack {
-                    Button("Add Server…") { editing = MCPServerConfig() }
-                    Button("Add Kaiten…") { editing = Self.kaitenPreset }
+                Menu("Add") {
+                    ForEach(MCPPresets.all) { p in Button(p.name) { editing = p.config } }
+                    Divider()
+                    Button("Other MCP Server…") { editing = MCPServerConfig() }
                     Button("Import JSON…") { importing = true }
                 }
+                .fixedSize()
             } header: {
-                Text("MCP servers (MeetNotes as client)")
+                Text("MCP servers (Keepword as client)")
             } footer: {
-                Text("Same format as Claude Desktop: a command with arguments and environment variables, or an HTTP URL. Tokens are stored in the Keychain.")
+                Text("Jira, Linear, Notion, Asana and Miro sign in through the browser. Any other MCP server works too: a command with arguments and environment variables, or an HTTP URL, in the same format as Claude Desktop. Tokens are stored in the Keychain.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
         .sheet(item: $editing) { MCPServerEditor(mcp: mcp, config: $0) }
         .sheet(isPresented: $importing) { MCPImportSheet(mcp: mcp) }
-    }
-
-    static var kaitenPreset: MCPServerConfig {
-        var c = MCPServerConfig()
-        c.name = "Kaiten"
-        c.command = "node"
-        c.args = ["/path/to/kaiten-mcp-server/dist/index.js"]
-        c.taskTool = "kaiten_create_card"
-        return c
     }
 }
 
@@ -63,6 +58,8 @@ struct MCPServerEditor: View {
     @State var config: MCPServerConfig
     @State private var argsText = ""
     @State private var secretsText = ""
+    @State private var clientSecret = ""
+    private var preset: MCPPreset? { MCPPresets.find(config.preset) }
     @State private var testing = false
     @State private var tools: [MCPTool] = []
     @State private var error: String?
@@ -82,17 +79,31 @@ struct MCPServerEditor: View {
                 }
             } else {
                 TextField("URL", text: $config.url, prompt: Text("https://…/mcp"))
+                Picker("Sign-in", selection: Binding(get: { config.auth ?? "headers" }, set: { config.auth = $0 == "headers" ? nil : $0 })) {
+                    Text("Browser (OAuth)").tag("oauth")
+                    Text("Token in headers").tag("headers")
+                }
             }
-            VStack(alignment: .leading) {
-                Text(config.transport == "stdio" ? "Environment (KEY=value per line, stored in Keychain)" : "Headers (Name: value per line, stored in Keychain)")
-                TextEditor(text: $secretsText).font(.system(size: 12, design: .monospaced)).frame(height: 70)
-                if config.name.lowercased().contains("kaiten") {
-                    Text("Kaiten: KAITEN_API_URL=https://<company>.kaiten.ru/api/latest, KAITEN_API_TOKEN=<profile → API key>, optional KAITEN_DEFAULT_SPACE_ID=<id>. Build the server first: npm install && npm run build.")
-                        .font(.caption).foregroundStyle(.secondary)
+            if let preset { Text(preset.note).font(.caption).foregroundStyle(.secondary) }
+            // Presets that register themselves need no client; custom servers and Asana do.
+            if config.usesOAuth && (preset == nil || preset?.needsClient == true || config.clientID != nil) {
+                TextField("Client ID", text: Binding(get: { config.clientID ?? "" }, set: { config.clientID = $0.isEmpty ? nil : $0 }),
+                          prompt: Text(preset?.needsClient == true ? "Required" : "Optional"))
+                SecureField("Client secret", text: $clientSecret, prompt: Text("Optional"))
+                Text("Only for services that don't register apps automatically. Use the redirect URL \(MCPOAuth.fixedRedirect).")
+                    .font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
+            } else if !config.usesOAuth {
+                VStack(alignment: .leading) {
+                    Text(config.transport == "stdio" ? "Environment (KEY=value per line, stored in Keychain)" : "Headers (Name: value per line, stored in Keychain)")
+                    TextEditor(text: $secretsText).font(.system(size: 12, design: .monospaced)).frame(height: 70)
                 }
             }
             HStack {
-                Button("Test Connection") { Task { await test() } }.disabled(testing)
+                if config.usesOAuth && MCPOAuth.signedIn(config.id) && mcp.signingIn != config.id {
+                    Button("Sign Out") { mcp.signOut(config); tools = [] }
+                }
+                Button(config.usesOAuth && mcp.mustSignIn(config) ? "Sign In and Test" : "Test Connection") { Task { await test() } }
+                    .disabled(testing || mcp.signingIn != nil)
                 if testing { ProgressView().controlSize(.small) }
                 if let error { Text(error).font(.caption).foregroundStyle(.red).lineLimit(3) }
                 else if !tools.isEmpty { Text("\(tools.count) tools").font(.caption).foregroundStyle(.green) }
@@ -109,16 +120,15 @@ struct MCPServerEditor: View {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") { apply(); mcp.save(config); dismiss() }
-                    .disabled(config.name.isEmpty || (config.transport == "stdio" ? config.command.isEmpty : config.url.isEmpty))
+                    .disabled(config.name.isEmpty || (config.transport == "stdio" ? config.command.isEmpty : config.url.isEmpty)
+                              || (config.usesOAuth && preset?.needsClient == true && (config.clientID ?? "").isEmpty))
             }
         }
         .onAppear {
             argsText = config.args.joined(separator: "\n")
             let sep = config.transport == "stdio" ? "=" : ": "
             secretsText = config.secrets.sorted { $0.key < $1.key }.map { "\($0.key)\(sep)\($0.value)" }.joined(separator: "\n")
-            if config.secrets.isEmpty && config.name == "Kaiten" {
-                secretsText = "KAITEN_API_URL=https://<company>.kaiten.ru/api/latest\nKAITEN_API_TOKEN=\nKAITEN_DEFAULT_SPACE_ID="
-            }
+            clientSecret = config.clientSecret
         }
     }
 
@@ -131,7 +141,8 @@ struct MCPServerEditor: View {
             let k = line[..<i].trimmingCharacters(in: .whitespaces), v = line[line.index(after: i)...].trimmingCharacters(in: .whitespaces)
             if !k.isEmpty, !v.isEmpty { secrets[k] = v }
         }
-        config.secrets = secrets
+        config.secrets = config.usesOAuth ? [:] : secrets
+        config.clientSecret = config.usesOAuth ? clientSecret : ""
     }
 
     private func test() async {
@@ -139,9 +150,10 @@ struct MCPServerEditor: View {
         mcp.save(config)
         testing = true
         error = nil
+        if config.usesOAuth && mcp.mustSignIn(config) { await mcp.signIn(config) }
         tools = await mcp.connect(config)
         error = mcp.status[config.id]
-        if config.taskTool == nil { config.taskTool = TaskMapping.suggestTaskTool(tools) }
+        if config.taskTool.map({ t in !tools.contains { $0.name == t } }) ?? true { config.taskTool = TaskMapping.suggestTaskTool(tools) }
         testing = false
     }
 }

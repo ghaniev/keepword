@@ -24,4 +24,4 @@ Fixture locations under `src-tauri/target/`:
 
 Fixtures stay out of Git. Model tests do not record the microphone or send meeting content to a provider.
 
-Installer lifecycle checks use `windows/scripts/smoke-installer.ps1` and a dedicated `target/installer-smoke/` library. The script refuses to run while MeetNotes is open or another installation exists.
+Installer lifecycle checks use `windows/scripts/smoke-installer.ps1` and a dedicated `target/installer-smoke/` library. The script refuses to run while Keepword is open or another installation exists.

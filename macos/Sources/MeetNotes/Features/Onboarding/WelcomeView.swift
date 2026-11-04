@@ -7,7 +7,7 @@ struct WelcomeView: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            Text("Welcome to MeetNotes").font(.system(size: 30, weight: .bold))
+            Text("Welcome to Keepword").font(.system(size: 30, weight: .bold))
             Text("Choose how to generate summaries").font(.title3).foregroundStyle(.secondary)
             HStack(alignment: .top, spacing: 36) {
                 LocalAIPicker(downloader: model.downloader) { finish() }
@@ -143,7 +143,7 @@ struct CloudAICard: View {
                 Label("Self-host for privacy", systemImage: "server.rack")
             }
             .padding(.top, 8)
-            Text("If you choose a cloud provider, MeetNotes sends text transcripts of your calls, including participant names and meeting titles, to that provider to generate insights. Recorded audio never leaves your Mac.")
+            Text("If you choose a cloud provider, Keepword sends text transcripts of your calls, including participant names and meeting titles, to that provider to generate insights. Recorded audio never leaves your Mac.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 6)
             Spacer(minLength: 0)

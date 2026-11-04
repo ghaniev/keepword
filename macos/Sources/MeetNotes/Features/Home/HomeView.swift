@@ -5,6 +5,7 @@ struct HomeView: View {
     @ObservedObject var calendar: CalendarService
     @State private var recent: [Meeting] = []
     @State private var due: [(ActionItem, Meeting)] = []
+    @State private var attention: [AttentionItem] = []
 
     var body: some View {
         ScrollView {
@@ -22,10 +23,11 @@ struct HomeView: View {
                         ForEach(calendar.upcoming) { UpcomingMeetingRow(event: $0) }
                     }
                 }
-                section("Due Soon", icon: "checkmark.circle") {
-                    if due.isEmpty {
-                        Text("No open action items with a due date.").foregroundStyle(.secondary)
+                section("Needs Attention", icon: "exclamationmark.circle") {
+                    if due.isEmpty && attention.isEmpty {
+                        Text("Nothing needs your attention.").foregroundStyle(.secondary)
                     } else {
+                        ForEach(attention) { AttentionRow(item: $0) }
                         ForEach(due, id: \.0.id) { a, m in ActionItemRow(item: a, meetingTitle: m.title) }
                     }
                 }
@@ -33,7 +35,7 @@ struct HomeView: View {
                     if recent.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Record Your First Call").font(.headline)
-                            Text("Press Record (⌘R) when a call starts. MeetNotes captures your microphone and the other participants through system audio — no bot joins the call.")
+                            Text("Press Record (⌘R) when a call starts. Keepword captures your microphone and the other participants through system audio — no bot joins the call.")
                                 .foregroundStyle(.secondary)
                             Button { model.startRecording() } label: { Label("Start Recording", systemImage: "record.circle") }
                         }
@@ -63,6 +65,8 @@ struct HomeView: View {
             recent = Array(((try? model.store.meetings(.all)) ?? []).prefix(6))
             let soon = Calendar.current.startOfDay(for: .now).addingTimeInterval(3 * 86400)
             due = ((try? model.store.allActionItems()) ?? []).filter { !$0.0.completed && ($0.0.dueDate.map { $0 < soon } ?? false) }
+                .sorted { $0.0.dueDate! < $1.0.dueDate! }
+            attention = AttentionItem.find(in: model.store)
         }
     }
 
@@ -93,6 +97,7 @@ struct UpcomingMeetingRow: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
+            MeetingBriefButton(event: event)
             if let link = event.videoLink {
                 Button("Join & Record") { NSWorkspace.shared.open(link); model.startRecording(event: event) }
                     .disabled(model.recordingID != nil)

@@ -65,7 +65,7 @@ struct AllActionItemsView: View {
     private func sendAll() {
         Task {
             do {
-                let n = try await model.calendar.sendToReminders(filtered.map(\.0), meetingTitle: "MeetNotes")
+                let n = try await model.calendar.sendToReminders(filtered.map(\.0), meetingTitle: "Keepword")
                 model.toast = String(localized: "Sent \(n) item(s) to Reminders")
             } catch { model.toast = error.localizedDescription }
         }

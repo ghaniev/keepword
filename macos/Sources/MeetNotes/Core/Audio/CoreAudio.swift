@@ -132,7 +132,7 @@ final class SystemAudioTap {
 
         let outputUID = try AudioDevices.defaultOutputUID()
         let aggregate: [String: Any] = [
-            kAudioAggregateDeviceNameKey: "MeetNotes Tap",
+            kAudioAggregateDeviceNameKey: "Keepword Tap",
             kAudioAggregateDeviceUIDKey: UUID().uuidString,
             kAudioAggregateDeviceMainSubDeviceKey: outputUID,
             kAudioAggregateDeviceIsPrivateKey: true,

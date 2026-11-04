@@ -71,7 +71,7 @@ struct AIProviderSettings: View {
                 .onChange(of: embeddingSource) { model.reindexAll(); model.toast = String(localized: "Reindexing documents...") }
                 switch embeddingSource {
                 case "local":
-                    Text("paraphrase-multilingual-MiniLM-L12-v2: 50+ languages including Russian, runs on this Mac, no key. Downloaded once (~470 MB) into the MeetNotes library.")
+                    Text("paraphrase-multilingual-MiniLM-L12-v2: 50+ languages including Russian, runs on this Mac, no key. Downloaded once (~470 MB) into the Keepword library.")
                         .font(.caption).foregroundStyle(.secondary)
                 case "server":
                     TextField("Embedding model", text: $embeddingModel)

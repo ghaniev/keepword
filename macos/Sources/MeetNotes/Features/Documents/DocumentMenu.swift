@@ -50,7 +50,7 @@ struct DocumentMenu: View {
         for i in ins { body += "- \(i.text)\n" }
         body += "\nAction Items\n"
         for a in acts { body += "- \(a.text)\n" }
-        body += "\nPrepared with MeetNotes"
+        body += "\nPrepared with Keepword"
         var c = URLComponents(string: "mailto:")!
         c.queryItems = [URLQueryItem(name: "subject", value: meeting.title), URLQueryItem(name: "body", value: body)]
         if let url = c.url { NSWorkspace.shared.open(url) }

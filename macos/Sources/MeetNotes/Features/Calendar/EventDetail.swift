@@ -22,6 +22,7 @@ struct EventDetail: View {
                 Button { model.open(linked.id) } label: { Label("Open linked document", systemImage: "doc.text") }
             }
             HStack {
+                if event.end > .now { MeetingBriefButton(event: event) }
                 if let link = event.videoLink {
                     Button("Join") { NSWorkspace.shared.open(link) }
                     Button("Join & Record") { NSWorkspace.shared.open(link); model.startRecording(event: event) }.disabled(model.recordingID != nil)

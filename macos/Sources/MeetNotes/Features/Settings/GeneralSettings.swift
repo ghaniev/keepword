@@ -34,7 +34,7 @@ struct GeneralSettings: View {
                 }
                 if languageChanged {
                     HStack {
-                        Text("Restart MeetNotes to apply.").foregroundStyle(.secondary)
+                        Text("Restart Keepword to apply.").foregroundStyle(.secondary)
                         Spacer()
                         Button("Restart Now") {
                             let config = NSWorkspace.OpenConfiguration()

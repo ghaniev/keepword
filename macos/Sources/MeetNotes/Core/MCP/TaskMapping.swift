@@ -18,7 +18,7 @@ enum TaskMapping {
     /// Picks the most likely "create a task" tool (create_card, create_task, create_issue…).
     static func suggestTaskTool(_ tools: [MCPTool]) -> String? {
         let words = ["card", "task", "issue", "ticket", "todo"]
-        return tools.first { t in t.name.contains("create") && words.contains { t.name.contains($0) } }?.name
+        return tools.first { t in let n = t.name.lowercased(); return n.contains("create") && words.contains { n.contains($0) } }?.name
     }
 
     /// Fields the draft fills per task (title, description, due); everything else is shared across the batch.
@@ -55,11 +55,13 @@ enum TaskMapping {
     }
 
     /// Pulls (id, label) pairs out of a listing tool's result, JSON or text.
-    static func options(from text: String) -> [(String, String)] {
+    /// `value` is the key whose value the task tool wants (usually "id"; Jira projects want "key").
+    static func options(from text: String, value: String = "id") -> [(String, String)] {
         func collect(_ o: Any, into out: inout [(String, String)]) {
             if let arr = o as? [Any] { arr.forEach { collect($0, into: &out) } }
             else if let d = o as? [String: Any] {
-                if let id = d["id"], let label = ["title", "name", "full_name", "username", "email"].lazy.compactMap({ d[$0] as? String }).first {
+                if let id = d[value], !(id is [Any] || id is [String: Any]),
+                   let label = ["title", "name", "displayName", "full_name", "username", "email", "url"].lazy.compactMap({ d[$0] as? String }).first {
                     out.append(("\(id)", label))
                 } else {
                     d.values.forEach { collect($0, into: &out) }

@@ -41,6 +41,7 @@ final class AppModel: ObservableObject {
     @Published var focusSearch = false
     @Published var revision = 0  // bumps on any DB change so views refetch
     @Published var toast: String?
+    @Published var briefs: [String: String] = [:]  // AI meeting briefs by calendar event id, for this session
     @Published var transcriptJump: (meeting: String, time: Double)?
     @Published var documentTab: DocumentTab = .summary
     @Published var pendingChatPrompt: String?
@@ -83,6 +84,9 @@ final class AppModel: ObservableObject {
         if UserDefaults.standard.flag("callDetection", true) { callDetector.start() }
         if let i = CommandLine.arguments.firstIndex(of: "--snapshot"), i + 1 < CommandLine.arguments.count {
             Demo.snapshots(self, to: CommandLine.arguments[i + 1])
+        }
+        if let i = CommandLine.arguments.firstIndex(of: "--screenshots"), i + 1 < CommandLine.arguments.count {
+            Screenshots.run(self, to: CommandLine.arguments[i + 1])
         }
         calendar.refresh()
         if demoCalendar { calendar.useDemoEvents(Demo.calendarEvents()) }
@@ -154,7 +158,7 @@ final class AppModel: ObservableObject {
                 toast = String(localized: "Screenshot attached at \(timestamp(time))")
             } catch is CancellationError {
             } catch {
-                toast = String(localized: "Couldn't capture screenshot: \(error.localizedDescription). Allow MeetNotes in System Settings → Privacy & Security → Screen & System Audio Recording.")
+                toast = String(localized: "Couldn't capture screenshot: \(error.localizedDescription). Allow Keepword in System Settings → Privacy & Security → Screen & System Audio Recording.")
             }
         }
     }
@@ -193,12 +197,13 @@ final class AppModel: ObservableObject {
 
     private var startingRecording = false  // a start is in flight; a second press must not start another
 
-    func startRecording(title: String? = nil, event: CalEvent? = nil) {
+    /// `mode` overrides the Recording setting for this call (the menu bar's in-person meeting records the microphone only).
+    func startRecording(title: String? = nil, event: CalEvent? = nil, mode override: RecordingMode? = nil) {
         guard recordingID == nil, !startingRecording else { return }
         startingRecording = true
         Task {
             defer { startingRecording = false }
-            let mode = RecordingMode(rawValue: defaults.string(forKey: "recordingMode") ?? "") ?? .both
+            let mode = override ?? RecordingMode(rawValue: defaults.string(forKey: "recordingMode") ?? "") ?? .both
             if mode != .systemOnly, !(await AVCaptureDevice.requestAccess(for: .audio)) {
                 toast = String(localized: "Microphone access denied. Enable it in System Settings → Privacy & Security → Microphone.")
                 permissionsRequested = true
@@ -220,7 +225,7 @@ final class AppModel: ObservableObject {
             }
             recorder.onMicBlocked = { [weak self] in
                 Task { @MainActor in
-                    self?.toast = String(localized: "The microphone is delivering silence — macOS is blocking it. Turn MeetNotes on in System Settings → Privacy & Security → Microphone (rebuilt copies may need it again).")
+                    self?.toast = String(localized: "The microphone is delivering silence — macOS is blocking it. Turn Keepword on in System Settings → Privacy & Security → Microphone (rebuilt copies may need it again).")
                 }
             }
             recorder.onLevel = { [weak self] level, isMic in

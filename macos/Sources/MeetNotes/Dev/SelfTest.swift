@@ -1,10 +1,31 @@
 import AVFoundation
+import CryptoKit
 import FluidAudio
 import Foundation
 import GRDB
 
 extension Pipeline {
     static func selfTest() {
+        // Plain-text action items (2026-11-04 is a Wednesday).
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(identifier: "UTC")!
+        let wed = utc.date(from: DateComponents(year: 2026, month: 11, day: 4, hour: 15))!
+        func day(_ y: Int, _ m: Int, _ d: Int) -> Date { utc.date(from: DateComponents(year: y, month: m, day: d))! }
+        func task(_ s: String) -> TaskText.Parsed { TaskText.parse(s, now: wed, calendar: utc) }
+        precondition(task("Send the deck tomorrow @Anna") == .init(text: "Send the deck", dueDate: day(2026, 11, 5), assignee: "Anna"))
+        precondition(task("Review the PR on friday") == .init(text: "Review the PR", dueDate: day(2026, 11, 6)))
+        precondition(task("Сдать отчёт до пятницы") == .init(text: "Сдать отчёт", dueDate: day(2026, 11, 6)))
+        precondition(task("Позвонить Ивану через 3 дня") == .init(text: "Позвонить Ивану", dueDate: day(2026, 11, 7)))
+        precondition(task("Обновить план в среду").dueDate == day(2026, 11, 11))  // today's weekday means next week
+        precondition(task("Plan the offsite next week").dueDate == day(2026, 11, 9))
+        precondition(task("Подготовить демо 20 ноября") == .init(text: "Подготовить демо", dueDate: day(2026, 11, 20)))
+        precondition(task("Ship v2 by Dec 3") == .init(text: "Ship v2", dueDate: day(2026, 12, 3)))
+        precondition(task("Оплатить счёт 2.1").dueDate == day(2027, 1, 2))  // a passed date means next year
+        precondition(task("Встреча в 10.30 про бюджет") == .init(text: "Встреча в 10.30 про бюджет"))
+        precondition(task("Email @maria.k about the budget") == .init(text: "Email about the budget", assignee: "maria.k"))
+        precondition(task("tomorrow") == .init(text: "tomorrow"))
+        precondition(TaskText.resolve("ann", among: ["Anna Petrova", "Bob"]) == "Anna Petrova" && TaskText.resolve("x", among: ["Anna"]) == "x")
+
         let ws = [Word("Hello", 0, 0.5, "a"), Word("there.", 0.6, 1, "a"), Word("Hi", 1.2, 1.5, "b"), Word("again", 5, 5.5, "b")]
         precondition(utterances(ws).map(\.text) == ["Hello there.", "Hi", "again"])
 
@@ -156,6 +177,10 @@ extension Pipeline {
             let store = try Store()
             var m = Meeting.new(title: "Test"); m.status = "done"
             try store.save(m)
+            precondition(AttentionItem.find(in: store).map(\.reason) == [.noSummary])  // done, but nothing was generated
+            // Meeting brief: an earlier meeting with the same title counts; names compare across formats.
+            precondition(MeetingBrief.build(for: CalEvent(id: "e", title: "test", start: .now + 3600, end: .now + 7200), store: store).related.map(\.id) == [m.id])
+            precondition(MeetingBrief.names("Doe, John") == ["john doe"] && MeetingBrief.names("anna.k@x.com") == ["anna.k@x.com", "anna k"])
             let f = Folder(id: "f", name: "Clients", icon: "folder", color: "blue", templateId: "client")
             try store.saveFolder(f)
             let t1 = try store.template(for: m)?.id
@@ -243,7 +268,7 @@ extension Pipeline {
                 sema.signal()
             }
             sema.wait()
-            precondition(((replies[0]?["result"] as? [String: Any])?["serverInfo"] as? [String: Any])?["name"] as? String == "MeetNotes")
+            precondition(((replies[0]?["result"] as? [String: Any])?["serverInfo"] as? [String: Any])?["name"] as? String == "Keepword")
             precondition(((replies[1]?["result"] as? [String: Any])?["tools"] as? [Any])?.count == 5)
             let callText = (((replies[2]?["result"] as? [String: Any])?["content"] as? [[String: Any]])?.first?["text"] as? String) ?? ""
             precondition(callText.contains(m.id))
@@ -264,6 +289,107 @@ extension Pipeline {
         precondition(TaskMapping.options(from: #"Boards: [{"id": 7, "title": "Dev"}, {"id": 8, "name": "Ops"}]"#).map(\.0) == ["7", "8"])
         precondition(TaskMapping.options(from: "• Dev board (id: 7)\n• Ops (id: 8)").map(\.1) == ["Dev board", "Ops"])
         precondition(TaskMapping.link(in: "Created card https://x.kaiten.ru/space/1/card/9.") == "https://x.kaiten.ru/space/1/card/9")
+        precondition(TaskMapping.suggestTaskTool([MCPTool(name: "createJiraIssue", description: "", schemaJSON: Data("{}".utf8))]) == "createJiraIssue")
+        precondition(TaskMapping.options(from: #"[{"id":"10","key":"ATL","name":"Atlas"}]"#, value: "key").map(\.0) == ["ATL"])
+        precondition(MCPPresets.notionID("https://www.notion.so/team/Tasks-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d?pvs=4") == "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d")
+        let notion = MCPPresets.find("notion")!.build!(.init(title: "Fix", details: "Body"), ["parent": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"])
+        precondition(((notion["pages"] as? [[String: Any]])?.first?["properties"] as? [String: String])?["title"] == "Fix")
+        precondition((notion["parent"] as? [String: String])?["page_id"] == "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d")
+        precondition(MCPOAuth.parseChallenge(#"Bearer error="invalid_token", resource_metadata="https://x/.well-known/oauth-protected-resource/mcp", scope="read write""#)
+            == ["error": "invalid_token", "resource_metadata": "https://x/.well-known/oauth-protected-resource/mcp", "scope": "read write"])
+        oauthSelfTest()
         print("selftest ok")
+    }
+
+    /// The whole OAuth path against a mock authorization server and MCP server on loopback: 401 challenge, metadata discovery,
+    /// dynamic registration, PKCE, the resource parameter, code exchange, refresh of an expiring token and a tool call.
+    private static func oauthSelfTest() {
+        actor Mock {
+            var challenge = "", registered: [String] = [], refreshed = 0, scope = "", resource = ""
+            func set(_ f: (isolated Mock) -> Void) { f(self) }
+        }
+        let mock = Mock()
+        nonisolated(unsafe) var memory: [String: String] = [:]
+        let lock = NSLock()
+        MCPOAuth.load = { k in lock.withLock { memory[k] ?? "" } }
+        MCPOAuth.save = { k, v in lock.withLock { memory[k] = v.isEmpty ? nil : v } }
+        defer { MCPOAuth.load = { Keychain.get($0) }; MCPOAuth.save = { Keychain.set($0, $1) } }
+
+        let sema = DispatchSemaphore(value: 0)
+        nonisolated(unsafe) var outcome = ""
+        Task.detached {
+            do {
+                let server = try await LoopbackHTTP { req in
+                    let base = "http://\(req.headers["host"] ?? "")"
+                    switch (req.method, req.route) {
+                    case ("POST", "/mcp"):
+                        guard req.headers["authorization"] == "Bearer access-2" else {
+                            return .init(status: 401, headers: ["WWW-Authenticate": #"Bearer resource_metadata="\#(base)/.well-known/oauth-protected-resource/mcp", scope="tasks""#])
+                        }
+                        let msg = (try? JSONSerialization.jsonObject(with: req.body) as? [String: Any]) ?? [:]
+                        guard let id = msg["id"] else { return .init(status: 202) }
+                        let result: [String: Any] = switch msg["method"] as? String {
+                        case "tools/list": ["tools": [["name": "create_issue", "inputSchema": ["type": "object", "properties": ["title": ["type": "string"]]]]]]
+                        case "tools/call": ["content": [["type": "text", "text": "Created https://tracker.test/1"]]]
+                        default: ["protocolVersion": "2025-06-18", "capabilities": [:], "serverInfo": ["name": "mock"]]
+                        }
+                        return .json(["jsonrpc": "2.0", "id": id, "result": result])
+                    case ("GET", "/.well-known/oauth-protected-resource/mcp"):
+                        return .json(["resource": "\(base)/mcp", "authorization_servers": ["\(base)/auth"]])
+                    case ("GET", "/.well-known/oauth-authorization-server/auth"):
+                        return .json(["issuer": "\(base)/auth", "authorization_endpoint": "\(base)/auth/authorize", "token_endpoint": "\(base)/auth/token",
+                                      "registration_endpoint": "\(base)/auth/register", "code_challenge_methods_supported": ["S256"]])
+                    case ("POST", "/auth/register"):
+                        let body = (try? JSONSerialization.jsonObject(with: req.body) as? [String: Any]) ?? [:]
+                        await mock.set { $0.registered = body["redirect_uris"] as? [String] ?? [] }
+                        return .json(["client_id": "client-1"], status: 201)
+                    case ("GET", "/auth/authorize"):
+                        let q = req.query
+                        guard q["client_id"] == "client-1", q["code_challenge_method"] == "S256", let redirect = q["redirect_uri"],
+                              await mock.registered == [redirect], let state = q["state"] else { return .init(status: 400) }
+                        await mock.set { $0.challenge = q["code_challenge"] ?? ""; $0.scope = q["scope"] ?? ""; $0.resource = q["resource"] ?? "" }
+                        return .init(status: 302, headers: ["Location": "\(redirect)?code=code-1&state=\(state)"])
+                    case ("POST", "/auth/token"):
+                        let f = req.form
+                        if f["grant_type"] == "authorization_code" {
+                            let hashed = Data(SHA256.hash(data: Data((f["code_verifier"] ?? "").utf8))).base64URL
+                            guard f["code"] == "code-1", f["client_id"] == "client-1", await mock.challenge == hashed, f["resource"] == "\(base)/mcp" else {
+                                return .json(["error": "invalid_grant"], status: 400)
+                            }
+                            return .json(["access_token": "access-1", "refresh_token": "refresh-1", "expires_in": 5])  // stale at once
+                        }
+                        guard f["grant_type"] == "refresh_token", f["refresh_token"] == "refresh-1" else { return .json(["error": "invalid_grant"], status: 400) }
+                        await mock.set { $0.refreshed += 1 }
+                        return .json(["access_token": "access-2", "expires_in": 3600])
+                    default:
+                        return .init(status: 404)
+                    }
+                }
+                let base = "http://localhost:\(server.port)"
+                defer { server.stop() }
+                var config = MCPServerConfig()
+                config.name = "Mock"
+                config.transport = "http"
+                config.url = "\(base)/mcp"
+                config.auth = "oauth"
+                do { _ = try await MCPClient(config: config).tools(); outcome = "no auth error" } catch is MCPAuthRequired {}
+                // The "browser": follows the authorization redirect to Keepword's loopback callback.
+                try await MCPOAuth.shared.signIn(config, scope: nil) { url in _ = try? await URLSession.shared.data(from: url) }
+                let client = MCPClient(config: config)
+                let tools = try await client.tools()
+                let text = try await client.call("create_issue", ["title": "x"])
+                let t = MCPOAuth.tokens(config.id)
+                let (scope, resource, refreshed) = await (mock.scope, mock.resource, mock.refreshed)
+                if outcome.isEmpty, tools.map(\.name) == ["create_issue"], text.contains("tracker.test"), t?.accessToken == "access-2",
+                   t?.refreshToken == "refresh-1", scope == "tasks", resource == "\(base)/mcp", refreshed == 1 {
+                    outcome = "ok"
+                } else {
+                    outcome = "tools \(tools.map(\.name)) text \(text) token \(t?.accessToken ?? "-") scope \(scope) resource \(resource) refreshed \(refreshed) \(outcome)"
+                }
+            } catch { outcome = "error: \(error)" }
+            sema.signal()
+        }
+        sema.wait()
+        precondition(outcome == "ok", "oauth selftest: \(outcome)")
     }
 }

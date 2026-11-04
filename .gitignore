@@ -1,6 +1,7 @@
 .DS_Store
 .build/
-MeetNotes.app/
+Keepword.app/
 .claude/
 dist/
 .swiftpm/
+MeetNotes.app/

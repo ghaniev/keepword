@@ -12,6 +12,7 @@ mod embed;
 mod llm;
 mod local_llm;
 mod mcp;
+mod oauth;
 mod models;
 mod pipeline;
 mod recorder;
@@ -199,11 +200,11 @@ fn main() {
             if let Err(e) = mcp::server(app.handle().clone()) {
                 eprintln!("MCP server: {e}");
             }
-            let show = MenuItem::with_id(app, "show", "Open MeetNotes", true, None::<&str>)?;
+            let show = MenuItem::with_id(app, "show", "Open Keepword", true, None::<&str>)?;
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
-                .tooltip("MeetNotes")
+                .tooltip("Keepword")
                 .menu(&Menu::with_items(app, &[&show, &quit])?)
                 .on_menu_event(|app, e| match e.id.as_ref() {
                     "show" => show_main(app),
@@ -265,6 +266,9 @@ fn main() {
             commands::run_query,
             commands::mcp_tools,
             commands::mcp_call,
+            commands::mcp_sign_in,
+            commands::mcp_sign_out,
+            commands::mcp_signed_in,
             commands::mcp_info,
             commands::screenshot,
             capture::capture_displays,
@@ -277,7 +281,7 @@ fn main() {
             commands::install_update
         ])
         .build(tauri::generate_context!())
-        .expect("error while building MeetNotes")
+        .expect("error while building Keepword")
         .run(|app, event| {
             if let tauri::RunEvent::ExitRequested { .. } = event {
                 app.state::<AppState>().shutdown.store(true, Relaxed);

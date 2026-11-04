@@ -10,7 +10,7 @@ struct MeetNotesApp: App {
     }
 
     var body: some Scene {
-        Window("MeetNotes", id: "main") {
+        Window("Keepword", id: "main") {
             RootView().environmentObject(model).frame(minWidth: 1000, minHeight: 620)
                 .onOpenURL { model.handle($0) }
         }
@@ -39,13 +39,13 @@ struct MeetNotesApp: App {
             .windowResizability(.contentSize)
             .defaultLaunchBehavior(.suppressed)  // opened by RootView when needed, never restored by itself
             .restorationBehavior(.disabled)
-        MenuBarExtra("MeetNotes", systemImage: model.recordingID == nil ? "waveform" : "record.circle.fill", isInserted: $showMenuBarIcon) {
+        MenuBarExtra("Keepword", systemImage: model.recordingID == nil ? "waveform" : "record.circle.fill", isInserted: $showMenuBarIcon) {
             MenuBarContent().environmentObject(model)
         }
     }
 }
 
-/// MeetNotes → Permissions… in the app menu.
+/// Keepword → Permissions… in the app menu.
 private struct PermissionsMenuButton: View {
     @Environment(\.openWindow) private var openWindow
     var body: some View { Button("Permissions…") { openWindow(id: "permissions") } }

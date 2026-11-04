@@ -12,7 +12,7 @@ final class MeetingOverlay {
         let p = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 400, height: 470),
                         styleMask: [.titled, .closable, .resizable, .nonactivatingPanel, .utilityWindow, .fullSizeContentView],
                         backing: .buffered, defer: false)
-        p.title = "MeetNotes"
+        p.title = "Keepword"
         p.titlebarAppearsTransparent = true
         p.isFloatingPanel = true
         p.level = .floating

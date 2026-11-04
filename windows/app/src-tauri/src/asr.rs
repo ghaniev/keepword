@@ -31,7 +31,7 @@ pub fn init(path: &Path) -> Res<()> {
                     .map_err(err)
             })
             .unwrap_or_else(|_| {
-                Err("ONNX Runtime could not be loaded. Reinstall MeetNotes.".into())
+                Err("ONNX Runtime could not be loaded. Reinstall Keepword.".into())
             })
         })
         .clone()

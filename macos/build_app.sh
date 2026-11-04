@@ -1,5 +1,5 @@
 #!/bin/sh
-# Builds MeetNotes.app. Info.plist carries the mic + system-audio usage strings,
+# Builds Keepword.app. Info.plist carries the mic + system-audio usage strings,
 # without which macOS refuses the process tap.
 # SIGN_IDENTITY="Developer ID Application: …" signs with hardened runtime for distribution (see release.sh);
 # by default the app is ad-hoc signed for local use.
@@ -9,7 +9,7 @@ VERSION="${VERSION:-0.1.0}"
 BUILD="${BUILD:-1}"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 swift build -c release
-APP=MeetNotes.app
+APP=Keepword.app
 rm -rf "$APP" && mkdir -p "$APP/Contents/MacOS"
 cp .build/release/MeetNotes "$APP/Contents/MacOS/"
 # llama.cpp ships as a framework; bundle it and point the binary at Contents/Frameworks.
@@ -35,7 +35,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>CFBundleIdentifier</key><string>com.anizh.meetnotes</string>
-  <key>CFBundleName</key><string>MeetNotes</string>
+  <key>CFBundleName</key><string>Keepword</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundleExecutable</key><string>MeetNotes</string>
   <key>CFBundlePackageType</key><string>APPL</string>
@@ -43,19 +43,19 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleLocalizations</key><array><string>en</string><string>ru</string></array>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>CFBundleVersion</key><string>$BUILD</string>
-  <key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>MeetNotes Deep Link</string>
+  <key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>Keepword Deep Link</string>
     <key>CFBundleURLSchemes</key><array><string>meetnotes</string></array></dict></array>
   <key>LSMinimumSystemVersion</key><string>15.0</string>
-  <key>NSMicrophoneUsageDescription</key><string>MeetNotes records your microphone to transcribe your side of the call.</string>
-  <key>NSAudioCaptureUsageDescription</key><string>MeetNotes records your Mac's audio output so other people on the call appear in the transcript. Everything stays on this Mac.</string>
-  <key>NSCalendarsFullAccessUsageDescription</key><string>MeetNotes shows your upcoming meetings and offers to record calls when they start.</string>
-  <key>NSRemindersFullAccessUsageDescription</key><string>MeetNotes sends your action items to the Reminders app.</string>
-  <key>NSScreenCaptureUsageDescription</key><string>MeetNotes captures screenshots during calls when you press the screenshot button.</string>
-  <key>NSLocalNetworkUsageDescription</key><string>MeetNotes talks to a local AI server (Ollama / LM Studio).</string>
+  <key>NSMicrophoneUsageDescription</key><string>Keepword records your microphone to transcribe your side of the call.</string>
+  <key>NSAudioCaptureUsageDescription</key><string>Keepword records your Mac's audio output so other people on the call appear in the transcript. Everything stays on this Mac.</string>
+  <key>NSCalendarsFullAccessUsageDescription</key><string>Keepword shows your upcoming meetings and offers to record calls when they start.</string>
+  <key>NSRemindersFullAccessUsageDescription</key><string>Keepword sends your action items to the Reminders app.</string>
+  <key>NSScreenCaptureUsageDescription</key><string>Keepword captures screenshots during calls when you press the screenshot button.</string>
+  <key>NSLocalNetworkUsageDescription</key><string>Keepword talks to a local AI server (Ollama / LM Studio).</string>
 </dict></plist>
 PLIST
 # macOS ties privacy permissions (microphone, screen) to the signature. With the ad-hoc one, after a rebuild
-# re-enable MeetNotes in System Settings → Privacy & Security → Microphone if the mic records silence.
+# re-enable Keepword in System Settings → Privacy & Security → Microphone if the mic records silence.
 # Dependency resource bundles (FluidAudio TTS lexicon, swift-transformers fallback tokenizer configs) aren't
 # bundled: the app never reaches them, and SwiftPM looks for them in the .app root, which codesign rejects.
 if [ "$SIGN_IDENTITY" = "-" ]; then

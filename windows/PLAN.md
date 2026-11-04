@@ -1,4 +1,4 @@
-# MeetNotes for Windows: plan
+# Keepword for Windows: plan
 
 Goal: the same app as `../macos` (Swift), built for Windows 10 2004+ / 11 x64.
 The macOS app stays the reference: same features, prompts, DB schema and UI layout.
@@ -35,7 +35,7 @@ The macOS app stays the reference: same features, prompts, DB schema and UI layo
 | `LocalEmbedder.swift` | `embed.rs` | ONNX MiniLM, ~30-word chunks, same as macOS |
 | `Pipeline.swift` (search/chat), `ChatPane.swift`, `LiveQueries.swift` | `commands.rs`, `embed.rs`, `schedule.rs` | retrieval, persisted citations and scheduled queries; UI in React |
 | `MCPServer.swift` | `mcp.rs` | `127.0.0.1` HTTP, token in Windows Credential Manager (`keyring`) |
-| `MCPClient.swift`, `TaskMapping.swift` | `mcp.rs`, `TaskForm.tsx` | external stdio / HTTP servers, Kaiten forms and saved task links |
+| `MCPClient.swift`, `MCPOAuth.swift`, `MCPPresets.swift`, `TaskMapping.swift` | `mcp.rs`, `oauth.rs`, `presets.ts`, `TaskForm.tsx` | external stdio / HTTP servers, browser sign-in (OAuth), Jira / Linear / Notion / Asana / Miro presets, task forms and saved task links |
 | `Core/Capture/ScreenCapture.swift` | `capture.rs`, `ScreenshotButton.tsx` | monitor capture and area selection; own windows excluded through Tauri content protection |
 | Call detection (Core Audio) | `call_detect.rs` | apps holding the mic: `IAudioSessionManager2` capture sessions |
 | EventKit (Calendar, Reminders) | `calendar.rs` | ICS URL first; Graph / Google and a replacement for Reminders need separate integrations |
@@ -48,7 +48,7 @@ Each phase ends with something that runs on Windows.
 
 All nine implementation phases are present in the Windows test release. Hardware/account acceptance and production publishing are separate gates, listed below; they are not claimed as passed.
 
-Not yet ported from macOS: on-device Whisper (WhisperKit) and the speech model manager.
+Not yet ported from macOS: on-device Whisper (WhisperKit) and the speech model manager; Home's meeting brief and Needs Attention; plain-text action items; the in-person (microphone-only) start in the tray menu.
 
 | Phase | Implemented | Remaining acceptance / gaps |
 |---|---|---|
@@ -59,7 +59,7 @@ Not yet ported from macOS: on-device Whisper (WhisperKit) and the speech model m
 | 5. Speakers | Local diarization, stable solo-speech references, duplicate-fragment consolidation with overlap constraints, default/configurable maximum and exact counts; voice registry, rename/merge/assignment; guided identification; text-preserving speaker-only repair | Multi-speaker call quality and threshold calibration on the reported recording |
 | 6. Search and chat | MiniLM + FTS, semantic related meetings, citations, @mentions, meeting/person/tag/folder/date/time filters; saved/scheduled scoped queries | Retrieval quality on the user's real library |
 | 7. Live and calls | Live ASR with silence guard/system-first echo dedup; opt-in call prompt; overlay/bookmarks; monitor and area screenshots | Actual call detection/latency and hardware capture acceptance |
-| 8. Organization/integrations | People/tags/tasks; folder hierarchy/context/template editing; autosaved notes/attachments/export/trash; hourly ICS calendar, overlap lanes and feed management; MCP HTTP/stdio/SSE/task links; RU/EN UI and built-in templates | Authenticated calendar/Kaiten servers; OS-specific EventKit/Reminders remain separate integrations |
+| 8. Organization/integrations | People/tags/tasks; folder hierarchy/context/template editing; autosaved notes/attachments/export/trash; hourly ICS calendar, overlap lanes and feed management; MCP HTTP/stdio/SSE/task links; RU/EN UI and built-in templates | Authenticated calendar feeds and real Jira / Linear / Notion / Asana accounts; OS-specific EventKit/Reminders remain separate integrations |
 | 9. Shipping | Current x64 NSIS test installer, pinned runtimes and dependency notices; checks/package/smoke scripts; Windows CI workflow; optional signing/updater configuration | Authenticode certificate, updater keys/endpoint and publication; clean VM/Windows 10/offline WebView2 acceptance |
 
 The current release includes the macOS-style interface and original icon from `macos/Resources/assets/meetnote_icn.webp`. It is an unsigned test build; model weights are downloaded separately.

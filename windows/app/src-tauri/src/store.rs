@@ -50,7 +50,7 @@ impl Store {
         if identifiers.iter().any(|id| {
             !MIGRATIONS.contains(&id.as_str()) && !UPGRADES.iter().any(|(known, _)| known == id)
         }) {
-            return Err(rusqlite::Error::SqliteFailure(rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_ERROR),Some("This library was created by a newer MeetNotes version. Update the Windows app before opening it.".into())));
+            return Err(rusqlite::Error::SqliteFailure(rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_ERROR),Some("This library was created by a newer Keepword version. Update the Windows app before opening it.".into())));
         }
         let applied: i64 =
             db.query_row("SELECT count(*) FROM grdb_migrations", [], |r| r.get(0))?;
