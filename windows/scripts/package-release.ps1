@@ -17,8 +17,15 @@ New-Item -ItemType Directory -Force -Path (Split-Path $configPath) | Out-Null
 $releaseConfig | ConvertTo-Json -Depth 6 | Set-Content $configPath -Encoding UTF8
 Push-Location $appRoot
 try {
-    & npm.cmd run tauri -- build --config $configPath
-    if ($LASTEXITCODE -ne 0) { throw 'Release build failed' }
+    # Tauri downloads NSIS from GitHub Releases on first use and gives up on a 5xx; the Rust build is cached,
+    # so a retry only repeats the bundling step.
+    for ($attempt = 1; ; $attempt++) {
+        & npm.cmd run tauri -- build --config $configPath
+        if ($LASTEXITCODE -eq 0) { break }
+        if ($attempt -ge 4) { throw 'Release build failed' }
+        Write-Warning "Release build failed (attempt $attempt), retrying in 30 s"
+        Start-Sleep -Seconds 30
+    }
     $installer = Get-ChildItem 'src-tauri/target/release/bundle/nsis/*-setup.exe' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     if (-not $installer) { throw 'Installer was not produced' }
     if ($Signed -and (Get-AuthenticodeSignature -LiteralPath $installer.FullName).Status -ne 'Valid') { throw 'Installer Authenticode signature is not valid' }
