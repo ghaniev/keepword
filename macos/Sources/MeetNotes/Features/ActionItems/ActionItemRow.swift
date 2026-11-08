@@ -12,16 +12,16 @@ struct ActionItemRow: View {
             Button {
                 var a = item; a.completed.toggle(); try? model.store.saveActionItem(a)
             } label: {
-                Image(systemName: item.completed ? "checkmark.circle.fill" : "circle").foregroundStyle(item.completed ? .green : .secondary)
+                Image(systemName: item.completed ? "checkmark.circle.fill" : "circle").foregroundStyle(item.completed ? Palette.brand : .secondary)
             }
             .buttonStyle(.plain)
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.text).font(.system(size: 13)).strikethrough(item.completed).foregroundStyle(item.completed ? .secondary : .primary)
                     .fixedSize(horizontal: false, vertical: true)
                 HStack(spacing: 10) {
-                    if let who = item.assignee { Label(who, systemImage: "person").labelStyle(.titleAndIcon) }
+                    if let who = item.assignee { HStack(spacing: 4) { Avatar(name: who, size: 14); Text(who) } }
                     if let due = item.dueDate {
-                        Label(due.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
+                        Label(due.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)), systemImage: "calendar")
                             .foregroundStyle(due < Calendar.current.startOfDay(for: .now) && !item.completed ? .red : .secondary)
                     }
                     if let meetingTitle {
@@ -33,7 +33,7 @@ struct ActionItemRow: View {
                         } else { Label(ref, systemImage: "arrow.up.forward.app") }
                     }
                 }
-                .font(.system(size: 10.5)).foregroundStyle(.secondary)
+                .font(.system(size: 11)).foregroundStyle(.secondary)
             }
         }
         .contextMenu {

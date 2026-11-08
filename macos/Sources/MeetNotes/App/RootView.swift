@@ -26,6 +26,7 @@ struct RootView: View {
             }
         }
         .animation(.default, value: model.toast)
+        .tint(Palette.brand)
         .task {
             // Without the microphone or system audio nothing can be recorded: ask up front.
             if UserDefaults.standard.flag("permissionsAtLaunch", true), !CommandLine.arguments.contains("--demo"), Permission.missingRequired {

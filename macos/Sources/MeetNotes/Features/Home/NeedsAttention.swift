@@ -37,7 +37,7 @@ struct AttentionRow: View {
             switch item.reason {
             case .speakers: Button("Identify Speakers") { model.identifyingSpeakers = item.meeting.id }
             case .failed: Button("Retry Transcription") { try? model.store.setStatus(item.meeting.id, "queued"); model.enqueue(item.meeting.id) }
-            case .noSummary: Button("Generate Summary") { model.enqueue(item.meeting.id, regenerateOnly: true) }
+            case .noSummary: Button("Generate Recap") { model.enqueue(item.meeting.id, regenerateOnly: true) }
             }
         }
         .padding(10)

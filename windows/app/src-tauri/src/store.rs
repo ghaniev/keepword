@@ -43,6 +43,11 @@ impl Store {
     pub fn open(dir: &Path) -> rusqlite::Result<Store> {
         let db = Connection::open(dir.join("meetnotes.sqlite"))?;
         db.execute_batch("PRAGMA foreign_keys = ON; CREATE TABLE IF NOT EXISTS grdb_migrations (identifier TEXT NOT NULL PRIMARY KEY);")?;
+        // Libraries from 0.1.0 recorded the v2 migration under an earlier name.
+        db.execute(
+            "UPDATE grdb_migrations SET identifier = ?1 WHERE identifier LIKE 'v2!_%' ESCAPE '!' AND identifier <> ?1",
+            [MIGRATIONS[1]],
+        )?;
         let identifiers = db
             .prepare("SELECT identifier FROM grdb_migrations")?
             .query_map([], |r| r.get::<_, String>(0))?

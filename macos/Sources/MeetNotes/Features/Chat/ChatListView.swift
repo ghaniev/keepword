@@ -10,7 +10,7 @@ struct ChatSessionListColumn: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Chat").font(.system(size: 15, weight: .semibold))
+                Text("Ask").font(.system(size: 15, weight: .semibold))
                 Spacer()
                 Button { model.selectedChat = nil } label: { Label("New Chat", systemImage: "plus.circle.fill").font(.system(size: 11.5)) }
                     .buttonStyle(.borderless)
@@ -68,7 +68,7 @@ struct GlobalChatDetail: View {
         VStack(spacing: 0) {
             HStack {
                 Image(systemName: "bubble.left.and.text.bubble.right")
-                Text("Chat").font(.system(size: 15, weight: .semibold))
+                Text("Ask").font(.system(size: 15, weight: .semibold))
                 Spacer()
                 Button {
                     let lastQuestion = model.selectedChat.flatMap { try? model.store.messages($0).last { $0.role == "user" }?.content } ?? ""

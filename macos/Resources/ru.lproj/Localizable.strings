@@ -103,7 +103,6 @@
 "Copied" = "Скопировано";
 "Copied to clipboard" = "Скопировано в буфер обмена";
 "Copy" = "Копировать";
-"Copy Insights & Action Items" = "Копировать инсайты и задачи";
 "Copy Transcript" = "Копировать транскрипт";
 "Copy attachments next to the exported note" = "Копировать вложения рядом с экспортированной заметкой";
 "Copy command" = "Скопировать команду";
@@ -177,7 +176,6 @@
 "Folder" = "Папка";
 "Folders" = "Папки";
 "General" = "Основные";
-"Generate Summary" = "Создать саммари";
 "Generating summary…" = "Создание саммари…";
 "Good afternoon" = "Добрый день";
 "Good evening" = "Добрый вечер";
@@ -287,7 +285,6 @@
 "No preparation context for this meeting yet." = "Для этой встречи пока нет материалов для подготовки.";
 "No tags yet" = "Тегов пока нет";
 "No transcript available" = "Транскрипт недоступен";
-"None (Unsorted)" = "Нет (без папки)";
 "None (top level)" = "Нет (верхний уровень)";
 "Not Now" = "Не сейчас";
 "Notes" = "Заметки";
@@ -346,7 +343,6 @@
 "Refresh Models" = "Обновить список моделей";
 "Refresh Now" = "Обновить сейчас";
 "Refresh calendar" = "Обновить календарь";
-"Regenerate Summary" = "Пересоздать саммари";
 "Regenerate token" = "Перевыпустить токен";
 "Reindex All Documents" = "Переиндексировать все документы";
 "Reindexing documents..." = "Переиндексация документов...";
@@ -395,7 +391,6 @@
 "Select a note to restore it" = "Выберите заметку, чтобы восстановить её";
 "Self-host for privacy" = "Свой сервер для приватности";
 "Semantic Search (embeddings)" = "Смысловой поиск (эмбеддинги)";
-"Send Summary via Email…" = "Отправить саммари по почте…";
 "Send all to Reminders" = "Отправить всё в Напоминания";
 "Send to Reminders" = "Отправить в Напоминания";
 "Sent %lld item(s) to Reminders" = "Отправлено в Напоминания: %lld";
@@ -635,3 +630,30 @@
 "Sign In and Test" = "Войти и проверить";
 "Waiting for the browser…" = "Ждём вход в браузере…";
 "Sign in to %@ to create tasks there." = "Войдите в %@, чтобы создавать там задачи.";
+
+/* Keepword look: Ask, Follow-ups, Library, Recap, Highlights */
+"Ask" = "Спросить";
+"Follow-ups" = "Задачи";
+"Inbox" = "Входящие";
+"Trash" = "Корзина";
+"Recap" = "Итоги";
+"Highlights" = "Главное";
+"Related meetings" = "Похожие встречи";
+"Yesterday" = "Вчера";
+"Ask or search your meetings" = "Спросите или найдите во встречах";
+"Who is %@? Name them once, and Keepword will recognize the voice." = "Как зовут %@? Назовите один раз, и Keepword будет узнавать этот голос.";
+"%@ in this meeting. Name them once, and Keepword will recognize them." = "%@ в этой встрече. Назовите их один раз, и Keepword будет их узнавать.";
+"Name Speaker" = "Назвать";
+"Name Speakers" = "Назвать";
+"%lld of %lld done" = "%lld из %lld выполнено";
+"Add a follow-up, e.g. “Send the deck tomorrow @Anna”" = "Добавить задачу, например «Отправить презентацию завтра @Анна»";
+"1 person" = "1 человек";
+"Trash is empty" = "Корзина пуста";
+"No meetings yet" = "Пока нет встреч";
+"Deleted meetings stay here for 30 days." = "Удалённые встречи хранятся здесь 30 дней.";
+"Move to folder" = "Переместить в папку";
+"Inbox" = "Входящие";
+"Regenerate Recap" = "Пересоздать итоги";
+"Copy Highlights and Follow-ups" = "Копировать главное и задачи";
+"Send Recap via Email…" = "Отправить итоги по почте…";
+"Generate Recap" = "Создать итоги";

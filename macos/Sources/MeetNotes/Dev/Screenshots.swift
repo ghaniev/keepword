@@ -178,8 +178,8 @@ enum Screenshots {
                 let text = field.stringValue.isEmpty ? field.placeholderString ?? "" : field.stringValue
                 let color: NSColor = field.stringValue.isEmpty ? .secondaryLabelColor : .labelColor
                 (text as NSString).draw(at: NSPoint(x: r.minX + 2, y: r.midY - font.capHeight / 2 - 3), withAttributes: [.font: font, .foregroundColor: color])
-                if let glass = NSImage(systemSymbolName: "magnifyingglass", accessibilityDescription: nil)?
-                    .withSymbolConfiguration(.init(pointSize: 13, weight: .medium).applying(.init(hierarchicalColor: .secondaryLabelColor))) {
+                if let glass = NSImage(systemSymbolName: "sparkle.magnifyingglass", accessibilityDescription: nil)?
+                    .withSymbolConfiguration(.init(pointSize: 13, weight: .medium).applying(.init(hierarchicalColor: NSColor(Palette.brand)))) {
                     glass.draw(in: NSRect(x: r.minX - 24, y: r.midY - glass.size.height / 2, width: glass.size.width, height: glass.size.height))
                 }
             }

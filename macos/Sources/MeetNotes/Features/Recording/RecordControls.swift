@@ -10,7 +10,7 @@ struct RecordControls: View {
                 Button(action: model.toggleRecording) {
                     HStack(spacing: 7) {
                         if model.recordingID == nil {
-                            Image(systemName: "record.circle").font(.system(size: 15))
+                            Image(systemName: "waveform").font(.system(size: 13, weight: .semibold))
                             Text("Record").font(.system(size: 13, weight: .medium))
                         } else {
                             Image(systemName: "stop.fill").font(.system(size: 11))
@@ -18,8 +18,8 @@ struct RecordControls: View {
                         }
                     }
                     .frame(maxWidth: .infinity).frame(height: 34)
-                    .foregroundStyle(model.recordingID == nil ? Color.primary : .white)
-                    .background(Capsule().fill(model.recordingID == nil ? Color.primary.opacity(0.09) : Color.red))
+                    .foregroundStyle(.white)
+                    .background(RoundedRectangle(cornerRadius: 9).fill(model.recordingID == nil ? Palette.brand : Color.red))
                 }
                 .buttonStyle(.plain)
                 .help(model.recordingID == nil ? "Start Recording (⌘R)" : "Stop Recording (⌘R)")

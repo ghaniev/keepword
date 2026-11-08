@@ -12,7 +12,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/summary-dark.webp">
-  <img alt="A meeting in Keepword on macOS: summary, key insights with timestamps, action items with owners and due dates" src="docs/screenshots/summary-light.webp">
+  <img alt="A meeting in Keepword on macOS: recap, highlights with timestamps, follow-ups with owners and due dates" src="docs/screenshots/summary-light.webp">
 </picture>
 
 Keepword records the microphone and the system audio as two separate tracks, so it works with Zoom, Meet, Teams, Slack or a phone call in the browser, and nobody has to admit a bot into the call. After the call it transcribes the audio, works out who said what, and writes a summary with key decisions and action items. Insights and chat answers link to the moment in the recording they come from.

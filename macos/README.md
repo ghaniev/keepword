@@ -69,7 +69,7 @@ Settings → AI Provider (or **Set Up AI…** in the File menu). There are four 
   ollama pull qwen3:8b && ollama pull bge-m3
   ```
 
-Semantic search, Similar Documents and chat across meetings use a built-in embedding model: `paraphrase-multilingual-MiniLM-L12-v2`. It runs on-device through Core ML (swift-embeddings), covers 50+ languages (a Russian question finds an English passage) and needs no server or key. It downloads once (~470 MB) into `~/Library/Application Support/MeetNotes/Models`. Transcripts are split into ~30-word chunks and embedded without speaker names. Switching the model or the chunking reindexes everything automatically. Settings → AI Provider → Embeddings can switch to an embedding server (Ollama / OpenAI) or turn embeddings off.
+Semantic search, Related meetings and chat across meetings use a built-in embedding model: `paraphrase-multilingual-MiniLM-L12-v2`. It runs on-device through Core ML (swift-embeddings), covers 50+ languages (a Russian question finds an English passage) and needs no server or key. It downloads once (~470 MB) into `~/Library/Application Support/MeetNotes/Models`. Transcripts are split into ~30-word chunks and embedded without speaker names. Switching the model or the chunking reindexes everything automatically. Settings → AI Provider → Embeddings can switch to an embedding server (Ollama / OpenAI) or turn embeddings off.
 
 Deep links: `meetnotes://record?title=…`, `stop`, `pause`, `bookmark`, `screenshot`, `open?id=…`, `transcribe?id=…`, `summarize?id=…`, `download-model?id=…`.
 
@@ -91,7 +91,7 @@ Add `-llmBaseURL local:llama -llmModel qwen3.5-4b` to either flag to try the loc
 ## Features
 | Area | Implementation |
 |---|---|
-| Layout | Sidebar: Record pill + Import, Home/Chat(Beta)/Calendar/Action Items/People/Tags, FOLDERS tree with counts, Recently Deleted. Card list grouped by day. Document view with `Folder / Title`, meta row, Summary · Transcript · Chat tabs. Centered search bar |
+| Layout | Sidebar: violet Record button + Import, Home/Ask/Calendar/Follow-ups/People/Tags, Library (All meetings, Inbox, folder tree with counts), Trash. Meeting list grouped by day ("Today", "Yesterday", weekdays), each row with the people who spoke; the selected row has a violet bar. Meeting view: title, one meta line (date, length, people, folder), Recap · Transcript · Ask tabs. Centered "Ask or search your meetings" field |
 | Recording | Mic (selectable device) + system audio via a Core Audio process tap, no bot. Modes: both / mic / system. Pause, mute, bookmarks (⌘B), level meters, menu bar icon |
 | Live transcript | Sliding-window Parakeet per source while recording, shown as chat bubbles |
 | Call detection | Core Audio list of processes holding the mic + known meeting apps → floating "Record this meeting?"; "Call ended?" prompt; ignore list |
@@ -100,17 +100,17 @@ Add `-llmBaseURL local:llama -llmModel qwen3.5-4b` to either flag to try the loc
 | Transcription | On-device Parakeet (v3, Ultra, Redux, v2) or Whisper (WhisperKit, tiny … large-v3) with a model manager, or a cloud engine (OpenAI, Groq, Deepgram, OpenAI-compatible) after the call, words → turns, echo dedup (mic vs system), import of audio/video files (drag & drop) |
 | Speakers | Offline diarization (pyannote + WeSpeaker + VBx). Voices are matched to known people best-first, at most one speaker per person per meeting, against up to 5 voice samples each (new samples only from confident matches). Words go to the speaker covering most of them; blocks where people talk at the same time are marked. The calendar attendee count caps the number of voices; "Re-identify Speakers…" sets it exactly. Rename once and it sticks; merge people (parent link) |
 | AI Cleanup | LLM rewrite in batches of 25 with an editable prompt; original kept, "Restore Original Text" |
-| Summary | Attention templates (9 built-in + your own). Priority: document → folder → default. Folder context goes into the prompt. Output: overview, Key Insights with time chips, Action Items (assignee, due date), tags, title |
+| Summary | Attention templates (9 built-in + your own). Priority: document → folder → default. Folder context goes into the prompt. Output: overview, Highlights with play-from-here time chips, Follow-ups (assignee, due date), tags, title |
 | Transcript tools | Synced mic+system player with bookmark markers and speed, speaker filter, search, edit, split, assign / rename person, re-transcribe |
 | Chat | Global and per-document sessions; citations `[n]` jump to the moment; `@Name`, `@tag`, `@'Title'` mentions; time ranges ("first 10 minutes", "в конце") |
 | Search | Hybrid FTS5 bm25 + embeddings, % score, highlighted snippets, "Ask AI" on results |
-| Similar Documents | Embedding similarity + shared tags/people boost |
-| People, Tags, Action Items | Person card (email, company, position, notes, meetings), tag cloud, all action items grouped by due date, send to Reminders |
+| Related meetings | Embedding similarity + shared tags/people boost |
+| People, Tags, Follow-ups | Person card (email, company, position, notes, meetings), tag cloud, all follow-ups grouped by due date, send to Reminders |
 | Home | Upcoming meetings with a **Brief** for each one that has history: earlier meetings of the same series, title or attendees, their open action items, and an AI brief on request (what was decided, who owes what, what to raise). **Needs Attention**: recent meetings with unidentified speakers, failed processing or no summary, and action items overdue or due within three days |
 | Plain-text action items | "Send the deck tomorrow @Anna" in a document's action items gets a due date and an assignee (matched to the meeting's people). English and Russian: today / tomorrow / the day after, weekdays ("on friday", "до пятницы"), "in 3 days" / "через 3 дня", "next week", "15.11", "Nov 15" / "15 ноября" |
 | Menu bar | Start / stop / pause, bookmark, an in-person meeting (microphone only), upcoming meetings, the latest meeting and a new chat |
 | Export | Auto-export Markdown with YAML frontmatter to an Obsidian vault, manual export, copy, email |
-| Trash | Recently Deleted for 30 days, restore |
+| Trash | Deleted meetings stay for 30 days, restore |
 | Long meetings | Map-reduce, as in Meetily. Past the model's input limit the transcript is split between utterances into overlapping parts. Each part is condensed into notes that keep `[mm:ss]` times (one retry on failure). Then the notes are summarized; if a level doesn't shrink the text, every part is trimmed evenly. Chat on a long meeting uses retrieval instead of truncation |
 | Device changes mid-call | AirPods or another mic or output connected or removed: the mic engine and the system tap rebuild themselves (retrying for ~10 s for Bluetooth) and keep writing to the same files. The switch-over time is filled with silence so both tracks stay aligned; a toast says what happened |
 | Crash safety | CAF files stay readable after `kill -9` (tested). A recording interrupted by a crash is marked "recovered" and processed automatically on the next launch. A crash during processing needs a manual retry, so a crashing step can't loop |
@@ -146,7 +146,7 @@ Sign-in follows the MCP authorization spec: protected-resource and authorization
 **Other MCP Server…** and **Import JSON…** (Claude Desktop format) add any other server: Keepword runs it itself (stdio) or connects over HTTP with a browser sign-in or with headers. Environment variables and headers are stored in the Keychain.
 
 Where to create tasks:
-- **Create Tasks…** next to Action Items: every open item at once.
+- **Create Tasks…** next to Follow-ups: every open item at once.
 - An action item's context menu: **Create Task in …**
 - **Create Task…** next to Notes: a task from the meeting notes.
 

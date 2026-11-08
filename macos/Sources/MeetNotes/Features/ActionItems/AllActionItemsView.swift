@@ -28,7 +28,7 @@ struct AllActionItemsView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Action Items").font(.system(size: 17, weight: .semibold))
+                Text("Follow-ups").font(.system(size: 17, weight: .semibold))
                 CountBadge(count: items.filter { !$0.0.completed }.count)
                 Spacer()
                 HStack(spacing: 4) {

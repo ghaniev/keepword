@@ -39,14 +39,14 @@ struct SummaryTab: View {
                 }
                 if !insights.isEmpty {
                     VStack(alignment: .leading, spacing: 10) {
-                        SectionTitle(title: "Key Insights", count: "\(insights.count)")
+                        SectionTitle(title: "Highlights")
                         ForEach(insights) { i in
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                Text("•").foregroundStyle(.secondary)
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(i.text).font(.system(size: 13)).textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
-                                    if let t = i.time { TimeChip(seconds: t) { model.open(meeting.id, at: t) } }
+                            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                                Group {
+                                    if let t = i.time { TimeChip(seconds: t) { model.open(meeting.id, at: t) } } else { Text("•").foregroundStyle(.secondary) }
                                 }
+                                .frame(width: 54, alignment: .leading)
+                                Text(i.text).font(.system(size: 13)).textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
                             }
                         }
                     }
@@ -74,7 +74,7 @@ struct SummaryTab: View {
                 AttachmentsSection(meetingID: meeting.id)
                 if !similar.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
-                        SectionTitle(title: "Similar Documents")
+                        SectionTitle(title: "Related meetings")
                         ForEach(similar, id: \.0.id) { m, score in
                             Button { model.open(m.id) } label: {
                                 HStack {
@@ -120,14 +120,22 @@ struct SummaryTab: View {
                 }
             }
         } else if meeting.status == "awaiting:speakers" || !unnamed.isEmpty && meeting.status == "done" {
-            HStack {
-                banner(icon: "person.wave.2", color: .blue,
-                       text: meeting.status == "awaiting:speakers" ? "\(meeting.statusLabel)" : "\(plural(unnamed.count, "new speaker")) in this meeting.")
-                Button("Identify Speakers") { model.identifyingSpeakers = meeting.id }
+            HStack(spacing: 10) {
+                Group {
+                    if meeting.status == "awaiting:speakers" { Text(meeting.statusLabel) }
+                    else if unnamed.count == 1 { Text("Who is \(unnamed[0].name)? Name them once, and Keepword will recognize the voice.") }
+                    else { Text("\(plural(unnamed.count, "new voice")) in this meeting. Name them once, and Keepword will recognize them.") }
+                }
+                .font(.system(size: 12.5)).fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                Button(unnamed.count == 1 ? "Name Speaker" : "Name Speakers") { model.identifyingSpeakers = meeting.id }
+                    .buttonStyle(.plain).foregroundStyle(Palette.brand).font(.system(size: 12.5, weight: .semibold))
             }
+            .padding(.horizontal, 12).padding(.vertical, 9)
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.primary.opacity(0.14)))
         }
         if meeting.status == "done" && insights.isEmpty && items.isEmpty && meeting.summary.isEmpty {
-            Button { model.enqueue(meeting.id, regenerateOnly: true) } label: { Label("Generate Summary", systemImage: "sparkles") }
+            Button { model.enqueue(meeting.id, regenerateOnly: true) } label: { Label("Generate Recap", systemImage: "sparkles") }
         }
     }
 
@@ -140,7 +148,7 @@ struct SummaryTab: View {
     @ViewBuilder private var actionItems: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                SectionTitle(title: "Action Items", count: items.isEmpty ? nil : "\(items.filter(\.completed).count)/\(items.count)")
+                SectionTitle(title: "Follow-ups", count: items.isEmpty ? nil : String(localized: "\(items.filter(\.completed).count) of \(items.count) done"))
                 Spacer()
                 if !items.isEmpty {
                     if let server = model.mcpClients.taskServers.first {
@@ -155,7 +163,7 @@ struct SummaryTab: View {
                 }
             }
             ForEach(items) { a in ActionItemRow(item: a) }
-            TextField("Add action item, e.g. “Send the deck tomorrow @Anna”", text: $newItem).textFieldStyle(.plain).font(.system(size: 12.5)).foregroundStyle(.secondary)
+            TextField("Add a follow-up, e.g. “Send the deck tomorrow @Anna”", text: $newItem).textFieldStyle(.plain).font(.system(size: 12.5)).foregroundStyle(.secondary)
                 .onSubmit {
                     guard !newItem.isEmpty else { return }
                     let t = TaskText.parse(newItem)

@@ -28,22 +28,21 @@ struct SidebarView: View {
         List(selection: selection) {
             Section {
                 nav("Home", "house", .home)
-                Label { HStack { Text("Chat"); BetaBadge() } } icon: { Image(systemName: "bubble.left.and.text.bubble.right") }
-                    .tag(AppModel.Section.chat)
+                nav("Ask", "sparkles", .chat)
                 nav("Calendar", "calendar", .calendar)
-                nav("Action Items", "checkmark.circle", .actionItems)
+                nav("Follow-ups", "checklist", .actionItems)
                 nav("People", "person.2", .people)
                 nav("Tags", "tag", .tags)
             }
             Section {
-                row("All Notes", icon: "tray.full", count: counts.all, .documents(.all))
-                row("Unsorted", icon: "tray", count: counts.unsorted, .documents(.unsorted))
+                row("All meetings", icon: "square.stack", count: counts.all, .documents(.all))
+                row("Inbox", icon: "tray", count: counts.unsorted, .documents(.unsorted))
                 OutlineGroup(tree(parent: nil), children: \.children) { node in
                     folderRow(node.folder)
                 }
             } header: {
                 HStack {
-                    Text("FOLDERS")
+                    Text("Library")
                     Spacer()
                     Button { editing = Folder(id: UUID().uuidString, name: "", icon: "folder", color: "blue") } label: {
                         Image(systemName: "plus")
@@ -52,7 +51,7 @@ struct SidebarView: View {
                 }
             }
             Section {
-                row("Recently Deleted", icon: "trash", count: counts.deleted, .documents(.deleted))
+                row("Trash", icon: "trash", count: counts.deleted, .documents(.deleted))
             }
         }
         .listStyle(.sidebar)

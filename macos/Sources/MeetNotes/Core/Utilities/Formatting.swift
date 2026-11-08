@@ -1,7 +1,16 @@
 import Foundation
 
 extension Date {
-    var dayHeader: String { formatted(.dateTime.day().month(.abbreviated).year()).uppercased() }
+    /// "Today", "Yesterday", a weekday within the last week, then "Tue, 4 Nov" (with the year when it isn't this year).
+    var dayHeader: String {
+        let cal = Calendar.current
+        if cal.isDateInToday(self) { return String(localized: "Today") }
+        if cal.isDateInYesterday(self) { return String(localized: "Yesterday") }
+        let days = cal.dateComponents([.day], from: cal.startOfDay(for: self), to: cal.startOfDay(for: .now)).day ?? 0
+        if (0..<7).contains(days) { return formatted(.dateTime.weekday(.wide)) }
+        if cal.isDate(self, equalTo: .now, toGranularity: .year) { return formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)) }
+        return formatted(.dateTime.day().month(.abbreviated).year())
+    }
     var hhmm: String { formatted(date: .omitted, time: .shortened) }
 }
 
@@ -30,6 +39,14 @@ func durationLabel(_ seconds: Double) -> String {
     f.unitsStyle = .abbreviated
     f.allowedUnits = seconds >= 3600 ? [.hour, .minute] : [.minute, .second]
     return f.string(from: seconds.rounded(.down)) ?? ""
+}
+
+/// "23 min" / "1 hr, 20 min", rounded to whole minutes ("23 мин").
+func minutesLabel(_ seconds: Double) -> String {
+    let f = DateComponentsFormatter()
+    f.unitsStyle = .short
+    f.allowedUnits = [.hour, .minute]
+    return f.string(from: max(60, (seconds / 60).rounded() * 60)) ?? ""
 }
 
 extension String {

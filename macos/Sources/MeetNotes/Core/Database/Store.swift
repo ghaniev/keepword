@@ -20,6 +20,10 @@ final class Store {
         var config = Configuration()
         config.foreignKeysEnabled = true
         db = try DatabaseQueue(path: path, configuration: config)
+        try db.write { db in
+            // Libraries from 0.1.0 recorded the v2 migration under an earlier name.
+            if try db.tableExists("grdb_migrations") { try db.execute(sql: Self.renameV2Migration) }
+        }
         try Self.migrator.migrate(db)
         try db.write { try BuiltinTemplates.localize($0) }
         try db.write { db in
@@ -36,6 +40,8 @@ final class Store {
             }
         }
     }
+
+    static let renameV2Migration = "UPDATE grdb_migrations SET identifier = 'v2_folders_tags' WHERE identifier LIKE 'v2!_%' ESCAPE '!' AND identifier <> 'v2_folders_tags'"
 
     static var migrator: DatabaseMigrator {
         var m = DatabaseMigrator()
@@ -413,6 +419,21 @@ final class Store {
         let ids = try db.read { try String.fetchAll($0, sql: "SELECT DISTINCT speaker_id FROM segments WHERE meeting_id = ? AND speaker_id IS NOT NULL ORDER BY start", arguments: [meetingID]) }
         var seen = Set<String>()
         return ids.compactMap { root($0, in: all) }.filter { seen.insert($0.id).inserted }
+    }
+
+    /// Named people per meeting in order of first speaking, for the avatars in the meeting list.
+    func participantsByMeeting() throws -> [String: [Speaker]] {
+        let all = try speakers()
+        let rows = try db.read {
+            try GRDB.Row.fetchAll($0, sql: "SELECT meeting_id, speaker_id FROM segments WHERE speaker_id IS NOT NULL GROUP BY meeting_id, speaker_id ORDER BY meeting_id, MIN(start)")
+        }
+        var out: [String: [Speaker]] = [:]
+        for r in rows {
+            let meeting: String = r["meeting_id"]
+            guard let s = root(r["speaker_id"], in: all), !(out[meeting]?.contains { $0.id == s.id } ?? false) else { continue }
+            out[meeting, default: []].append(s)
+        }
+        return out
     }
 
     func saveSpeaker(_ s: Speaker) throws { try db.write { try s.save($0) } }

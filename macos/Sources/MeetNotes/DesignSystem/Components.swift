@@ -1,9 +1,16 @@
 import AppKit
 import SwiftUI
 
-/// Visual language: light-blue tag chips, orange time chips and folder chips,
-/// colored initials avatars, soft rounded cards with a blue selected state.
+/// Visual language: the violet from the app icon as the accent (Record, selection, tabs, time chips),
+/// neutral grey tag chips, colored initials avatars, list rows marked by a bar on the left when selected.
 enum Palette {
+    /// Violet from the app icon; lighter in dark mode so it stays readable.
+    static let brand = Color(nsColor: NSColor(name: "KeepwordViolet") { appearance in
+        appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+            ? NSColor(srgbRed: 0.553, green: 0.522, blue: 0.937, alpha: 1)
+            : NSColor(srgbRed: 0.325, green: 0.290, blue: 0.718, alpha: 1)
+    })
+
     static let keys = ["blue", "green", "orange", "red", "purple", "pink", "teal", "yellow", "gray"]
 
     static func color(_ key: String) -> Color {
@@ -27,10 +34,10 @@ enum Palette {
         return colors[abs(h) % colors.count]
     }
 
-    static let tagFill = Color.blue.opacity(0.10)
-    static let tagText = Color(nsColor: .systemBlue).opacity(0.95)
-    static let timeFill = Color.orange.opacity(0.14)
-    static let timeText = Color.orange
+    static let tagFill = Color.primary.opacity(0.06)
+    static let tagText = Color.secondary
+    static let timeFill = brand.opacity(0.12)
+    static let timeText = brand
     static let cardFill = Color(nsColor: .controlBackgroundColor)
     static let sidebarFill = Color(nsColor: .windowBackgroundColor)
 }
@@ -72,7 +79,7 @@ struct TagChip: View {
     var onRemove: (() -> Void)? = nil
     var body: some View {
         HStack(spacing: 3) {
-            Text(name).font(.system(size: 10.5))
+            Text("#" + name).font(.system(size: 10.5))
             if let onRemove {
                 Button(action: onRemove) { Image(systemName: "xmark").font(.system(size: 7, weight: .bold)) }.buttonStyle(.plain)
             }
@@ -89,10 +96,14 @@ struct TimeChip: View {
     var action: (() -> Void)? = nil
     var body: some View {
         Button { action?() } label: {
-            Text(timestamp(seconds)).font(.system(size: 10, weight: .medium)).monospacedDigit()
-                .foregroundStyle(Palette.timeText)
-                .padding(.horizontal, 6).padding(.vertical, 2)
-                .background(RoundedRectangle(cornerRadius: 4).fill(Palette.timeFill))
+            HStack(spacing: 3) {
+                Image(systemName: "play.fill").font(.system(size: 7))
+                Text(timestamp(seconds)).font(.system(size: 10.5, weight: .medium)).monospacedDigit()
+            }
+            .foregroundStyle(Palette.timeText)
+            .padding(.horizontal, 6).padding(.vertical, 2)
+            .background(Capsule().fill(Palette.timeFill))
+            .fixedSize()
         }
         .buttonStyle(.plain)
         .help("Play from this timestamp")
@@ -105,14 +116,6 @@ struct CountBadge: View {
         Text("\(count)").font(.system(size: 10.5, weight: .medium)).foregroundStyle(.secondary).monospacedDigit()
             .padding(.horizontal, 6).padding(.vertical, 1)
             .background(Capsule().fill(Color.primary.opacity(0.07)))
-    }
-}
-
-struct BetaBadge: View {
-    var body: some View {
-        Text("Beta").font(.system(size: 9, weight: .medium)).foregroundStyle(.orange)
-            .padding(.horizontal, 5).padding(.vertical, 1)
-            .background(Capsule().fill(Color.orange.opacity(0.14)))
     }
 }
 
@@ -141,16 +144,34 @@ struct FolderIcon: View {
     }
 }
 
+/// A list row; the selected one gets a grey background and a violet bar on its left edge.
 struct Card<Content: View>: View {
     var selected = false
     @ViewBuilder let content: Content
     var body: some View {
         content
-            .padding(10)
+            .padding(.vertical, 9).padding(.leading, 13).padding(.trailing, 10)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: 9).fill(selected ? Color.accentColor.opacity(0.13) : Color.clear))
-            .overlay(RoundedRectangle(cornerRadius: 9).stroke(selected ? Color.accentColor.opacity(0.55) : Color.clear, lineWidth: 1))
+            .background(RoundedRectangle(cornerRadius: 6).fill(selected ? Color.primary.opacity(0.07) : Color.clear))
+            .overlay(alignment: .leading) {
+                if selected { UnevenRoundedRectangle(topLeadingRadius: 6, bottomLeadingRadius: 6).fill(Palette.brand).frame(width: 3) }
+            }
             .contentShape(Rectangle())
+    }
+}
+
+/// Overlapping initials avatars, at most `limit`, then "+N".
+struct AvatarStack: View {
+    let names: [String]
+    var limit = 4
+    var size: CGFloat = 19
+    var body: some View {
+        HStack(spacing: 4) {
+            HStack(spacing: 3) {
+                ForEach(Array(names.prefix(limit).enumerated()), id: \.offset) { _, n in Avatar(name: n, size: size) }
+            }
+            if names.count > limit { Text("+\(names.count - limit)").font(.system(size: 10.5)).foregroundStyle(.secondary) }
+        }
     }
 }
 
@@ -161,22 +182,27 @@ extension View {
     }
 }
 
-/// Text tabs with a grey capsule on the selected one (Summary / Transcript / Chat).
+/// Text tabs over a hairline, the selected one underlined in violet (Recap / Transcript / Ask).
 struct TextTabs<T: Hashable>: View {
     let tabs: [(T, LocalizedStringKey)]
     @Binding var selection: T
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 18) {
             ForEach(tabs, id: \.0) { tab in
                 Button { selection = tab.0 } label: {
-                    Text(tab.1).font(.system(size: 13.5))
+                    Text(tab.1).font(.system(size: 13.5, weight: selection == tab.0 ? .medium : .regular))
                         .foregroundStyle(selection == tab.0 ? .primary : .secondary)
-                        .padding(.horizontal, 10).padding(.vertical, 5)
-                        .background(RoundedRectangle(cornerRadius: 7).fill(selection == tab.0 ? Color.primary.opacity(0.07) : .clear))
+                        .padding(.vertical, 6)
+                        .overlay(alignment: .bottom) {
+                            Rectangle().fill(selection == tab.0 ? Palette.brand : .clear).frame(height: 2).offset(y: 1)
+                        }
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .bottom) { Rectangle().fill(Color.primary.opacity(0.08)).frame(height: 1) }
     }
 }
 
