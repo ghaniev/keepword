@@ -22,7 +22,7 @@ $urls = @(
 )
 $downloaded = $false
 foreach ($url in $urls) {
-    & curl.exe --silent --show-error --fail --location --retry 3 --output $archive $url
+    & curl.exe --silent --show-error --fail --location --retry 6 --retry-delay 15 --output $archive $url
     if ($LASTEXITCODE -eq 0) { $downloaded = $true; break }
 }
 if (-not $downloaded) { throw "FFmpeg download failed. Tried: $($urls -join ', ')" }

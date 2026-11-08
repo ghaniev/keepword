@@ -8,7 +8,7 @@ $downloadDir = Join-Path $PSScriptRoot '../app/src-tauri/target/runtime-download
 New-Item -ItemType Directory -Force -Path $downloadDir, $runtimeDir | Out-Null
 $archivePath = Join-Path $downloadDir 'onnxruntime-win-x64-1.22.0.zip'
 if (-not (Test-Path $archivePath) -or (Get-ArtifactHash $archivePath) -ne '174c616efc0271194488642a72f1a514e01487da4dfe84c49296d66e40ebe0da') {
-    & curl.exe --silent --show-error --fail --location --retry 3 --output $archivePath 'https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-win-x64-1.22.0.zip'
+    & curl.exe --silent --show-error --fail --location --retry 6 --retry-delay 15 --output $archivePath 'https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-win-x64-1.22.0.zip'
     if ($LASTEXITCODE -ne 0) { throw 'ONNX Runtime download failed' }
 }
 if ((Get-ArtifactHash $archivePath) -ne '174c616efc0271194488642a72f1a514e01487da4dfe84c49296d66e40ebe0da') { throw 'ONNX Runtime archive checksum mismatch' }
