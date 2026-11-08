@@ -165,7 +165,7 @@ Models are downloaded on first use, after which a fully local setup works offlin
 
 ### macOS
 
-Download `Keepword-0.1.0.dmg` from [Releases](https://github.com/ghaniev/keepwords/releases/latest), open it and drag Keepword to Applications. It needs macOS 15 or later on Apple Silicon. The app is signed with a Developer ID and notarized by Apple.
+Download `Keepword-0.1.0.dmg` from [Releases](https://github.com/ghaniev/keepword/releases/latest), open it and drag Keepword to Applications. It needs macOS 15 or later on Apple Silicon. The app is signed with a Developer ID and notarized by Apple.
 
 To build it yourself, you need Xcode 26. From a clone of this repository:
 
