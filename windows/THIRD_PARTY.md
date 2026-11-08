@@ -43,11 +43,11 @@ SOFTWARE.
 - [llama.cpp](https://github.com/ggml-org/llama.cpp), MIT, build b11457.
   Its license and LLVM OpenMP notice accompany the runtime in `llama/`.
 - [FFmpeg](https://ffmpeg.org/), LGPL-3.0 shared build from
-  [BtbN](https://github.com/BtbN/FFmpeg-Builds/releases/tag/autobuild-2026-10-21-13-06),
-  n8.1.3-20-gc8de997cb1. FFmpeg is invoked as a separate process. The shared libraries may be replaced
+  [BtbN](https://github.com/BtbN/FFmpeg-Builds/releases/tag/autobuild-2026-11-07-12-47),
+  n8.1.3-34-ga35157abb9. FFmpeg is invoked as a separate process. The shared libraries may be replaced
   by compatible user builds; Keepword does not impose a restriction on reverse engineering for debugging
   modifications to those libraries. The LGPL text is included in `media/LICENSE.txt`.
-  Corresponding FFmpeg source: [c8de997cb1](https://github.com/FFmpeg/FFmpeg/tree/c8de997cb1);
+  Corresponding FFmpeg source: [a35157abb9](https://github.com/FFmpeg/FFmpeg/tree/a35157abb9);
   build recipes and dependency source retrieval instructions: [FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds).
 - [ical.js](https://github.com/kewisch/ical.js), Mozilla Public License 2.0;
   used without source modifications. Its source and license are available from its npm package/repository.

@@ -17,10 +17,12 @@ mkdir -p "$APP/Contents/Frameworks"
 cp -R .build/release/llama.framework "$APP/Contents/Frameworks/"
 # Swift 6.2 links libswiftCompatibilitySpan: macOS 26 has it in /usr/lib/swift (searched first),
 # macOS 15 falls back to the copy bundled in Frameworks.
-install_name_tool -add_rpath "/usr/lib/swift" "$APP/Contents/MacOS/MeetNotes"
-install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/MeetNotes"
-cp "$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx/libswiftCompatibilitySpan.dylib" \
-  "$APP/Contents/Frameworks/"
+# Newer toolchains (Xcode 26.6) already add /usr/lib/swift; adding a duplicate rpath is an error.
+for rpath in /usr/lib/swift @executable_path/../Frameworks; do
+  otool -l "$APP/Contents/MacOS/MeetNotes" | grep -q "path $rpath " || install_name_tool -add_rpath "$rpath" "$APP/Contents/MacOS/MeetNotes"
+done
+SPAN="$(ls "$(xcode-select -p)"/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.*/macosx/libswiftCompatibilitySpan.dylib | tail -1)"
+cp "$SPAN" "$APP/Contents/Frameworks/"
 # Translations (ru.lproj): UI strings, plurals and permission prompts. English is the source language.
 mkdir -p "$APP/Contents/Resources" && cp -R Resources/*.lproj "$APP/Contents/Resources/"
 # App icon: Resources/assets/meetnote_icn.webp → AppIcon.icns (all sizes macOS asks for).
