@@ -124,7 +124,7 @@ struct PrepView: View {
                     Text("No preparation context for this meeting yet.").foregroundStyle(.secondary).font(.callout)
                 }
                 if !open.isEmpty {
-                    SectionTitle(title: "Open action items", count: "\(open.count)")
+                    SectionTitle(title: "Open follow-ups", count: "\(open.count)")
                     ForEach(open, id: \.0.id) { a, m in ActionItemRow(item: a, meetingTitle: m.title) }
                 }
                 if !related.isEmpty {

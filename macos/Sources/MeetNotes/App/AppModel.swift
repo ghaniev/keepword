@@ -408,7 +408,7 @@ final class AppModel: ObservableObject {
     func trash(_ id: String) {
         try? store.trash(id)
         if selectedMeeting == id { selectedMeeting = nil }
-        toast = String(localized: "Moved to Recently Deleted")
+        toast = String(localized: "Moved to Trash")
     }
 
     // MARK: - Call detection & calendar prompts

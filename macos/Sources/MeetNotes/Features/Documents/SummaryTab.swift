@@ -108,7 +108,7 @@ struct SummaryTab: View {
 
     @ViewBuilder private var statusBanner: some View {
         if meeting.id == model.recordingID {
-            banner(icon: "record.circle", color: .red, text: "Recording in progress. Insights and action items appear after the call.")
+            banner(icon: "record.circle", color: .red, text: "Recording in progress. Highlights and follow-ups appear after the call.")
         } else if meeting.isProcessing || meeting.status == "queued" {
             HStack(spacing: 8) { ProgressView().controlSize(.small); Text(meeting.statusLabel).foregroundStyle(.secondary) }
         } else if meeting.status.hasPrefix("error") {

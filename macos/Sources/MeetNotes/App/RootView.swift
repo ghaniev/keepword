@@ -93,7 +93,7 @@ struct MainArea: View {
                         } else if let id = model.selectedMeeting, let m = model.store.meeting(id) {
                             DocumentView(meeting: m).id(id)
                         } else {
-                            EmptyState(icon: "waveform", title: "No document selected", message: "Press ⌘R to record a call, or drop an audio/video file here.")
+                            EmptyState(icon: "waveform", title: "No meeting selected", message: "Press ⌘R to record a call, or drop an audio/video file here.")
                         }
                     }
                     .frame(minWidth: 460, idealWidth: 460)

@@ -16,7 +16,7 @@ struct TagsView: View {
             .padding(.horizontal, 22).padding(.vertical, 12)
             Divider()
             if tags.isEmpty {
-                EmptyState(icon: "tag", title: "No tags yet", message: "Tags are added by AI summaries, or by hand on a document.")
+                EmptyState(icon: "tag", title: "No tags yet", message: "Tags are added by AI recaps, or by hand on a meeting.")
             } else {
                 ScrollView {
                     FlowLayout(spacing: 10) {

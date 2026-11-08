@@ -84,7 +84,7 @@ struct TranscriptTab: View {
             TextEditSheet(title: "Edit Text", text: $editText) { try? model.store.editSegment(s.id!, text: editText) }
         }
         .sheet(item: $splitting) { s in SplitSheet(segment: s) }
-        .alert("Rename Speaker Across All Documents", isPresented: .init(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
+        .alert("Rename Speaker in All Meetings", isPresented: .init(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
             TextField("Name", text: $newName)
             Button("Rename") { if var s = renaming, !newName.isEmpty { s.name = newName; try? model.store.saveSpeaker(s) } }
             Button("Cancel", role: .cancel) {}

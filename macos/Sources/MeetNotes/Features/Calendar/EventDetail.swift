@@ -19,7 +19,7 @@ struct EventDetail: View {
                 FlowLayout { ForEach(event.attendees.prefix(12), id: \.self) { PersonChip(name: $0) } }
             }
             if let linked = (try? model.store.meetings(.all))?.first(where: { $0.eventId == event.id }) {
-                Button { model.open(linked.id) } label: { Label("Open linked document", systemImage: "doc.text") }
+                Button { model.open(linked.id) } label: { Label("Open linked meeting", systemImage: "doc.text") }
             }
             HStack {
                 if event.end > .now { MeetingBriefButton(event: event) }

@@ -40,7 +40,7 @@ struct TranscriptionSettings: View {
                 Text("Speakers are found on this Mac for every engine (pyannote segmentation, WeSpeaker voices, VBx clustering), from the word times the engine returns. The same voice prints recognize people across meetings.")
                     .font(.caption).foregroundStyle(.secondary)
             }
-            Section("AI Cleanup") {
+            Section("Transcript Cleanup") {
                 Toggle("Clean up transcription (filler words, punctuation)", isOn: $cleanup)
                 VStack(alignment: .leading) {
                     Text("Cleanup Prompt")

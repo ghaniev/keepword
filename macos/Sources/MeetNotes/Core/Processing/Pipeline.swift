@@ -482,7 +482,7 @@ actor Pipeline {
         }.sorted { $0.score > $1.score }
     }
 
-    /// "Similar Documents": closeness of meeting embeddings, boosted by shared tags and people.
+    /// "Related meetings": closeness of meeting embeddings, boosted by shared tags and people.
     static func similar(to id: String, store: Store) throws -> [(Meeting, Double)] {
         let chunks = try store.chunks()
         var sums: [String: [Float]] = [:]

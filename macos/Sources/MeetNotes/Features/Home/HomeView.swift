@@ -31,7 +31,7 @@ struct HomeView: View {
                         ForEach(due, id: \.0.id) { a, m in ActionItemRow(item: a, meetingTitle: m.title) }
                     }
                 }
-                section("Recent Documents", icon: "doc.text") {
+                section("Recent Meetings", icon: "doc.text") {
                     if recent.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Record Your First Call").font(.headline)

@@ -97,7 +97,7 @@ extension Permission {
         case .systemAudio: "The other participants, captured from the Mac's sound output. No bot joins the call."
         case .screenRecording: "Screenshots during a call."
         case .calendar: "Upcoming meetings and the prompt to record them."
-        case .reminders: "Sending action items to the Reminders app."
+        case .reminders: "Sending follow-ups to the Reminders app."
         }
     }
 

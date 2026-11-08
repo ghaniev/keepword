@@ -33,7 +33,7 @@ struct AllActionItemsView: View {
                 Spacer()
                 HStack(spacing: 4) {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("Search action items", text: $filter).textFieldStyle(.plain)
+                    TextField("Search follow-ups", text: $filter).textFieldStyle(.plain)
                 }
                 .padding(.horizontal, 8).padding(.vertical, 4).frame(width: 220)
                 .background(RoundedRectangle(cornerRadius: 6).fill(Color.primary.opacity(0.05)))
@@ -43,7 +43,7 @@ struct AllActionItemsView: View {
             .font(.system(size: 12)).padding(.horizontal, 22).padding(.vertical, 12)
             Divider()
             if groups.isEmpty {
-                EmptyState(icon: "checkmark.circle", title: "No action items yet", message: "Action items appear here after meetings are summarized.")
+                EmptyState(icon: "checkmark.circle", title: "No follow-ups yet", message: "Follow-ups appear here after each recap.")
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {

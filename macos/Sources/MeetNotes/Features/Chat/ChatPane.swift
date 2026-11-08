@@ -84,7 +84,7 @@ struct ChatPane: View {
                 .padding(.vertical, 4)
             }
             HStack(alignment: .bottom, spacing: 8) {
-                TextField(meetingID == nil ? "Ask about all documents… (@ to mention)" : "Ask about this meeting… (@ to mention)",
+                TextField(meetingID == nil ? "Ask about all meetings… (@ to mention)" : "Ask about this meeting… (@ to mention)",
                           text: $draft, axis: .vertical)
                     .textFieldStyle(.plain).lineLimit(1...6).focused($focused)
                     .onSubmit(send)
@@ -110,9 +110,9 @@ struct ChatPane: View {
 
     private var starters: [String] {
         meetingID == nil
-            ? [String(localized: "What decisions were made this week?"), String(localized: "List all action items assigned to me"),
+            ? [String(localized: "What decisions were made this week?"), String(localized: "List all follow-ups assigned to me"),
                String(localized: "What are the recurring themes?")]
-            : [String(localized: "Summarize this meeting"), String(localized: "List all action items"),
+            : [String(localized: "Summarize this meeting"), String(localized: "List all follow-ups"),
                String(localized: "What questions were left open?"), String(localized: "What was discussed at the end?")]
     }
 

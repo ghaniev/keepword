@@ -49,7 +49,7 @@ struct ActionItemRow: View {
         }
         .sheet(isPresented: $editing) {
             Form {
-                TextField("Action item", text: $draft.text, axis: .vertical)
+                TextField("Follow-up", text: $draft.text, axis: .vertical)
                 TextField("Assignee", text: Binding(get: { draft.assignee ?? "" }, set: { draft.assignee = $0.isEmpty ? nil : $0 }))
                 Toggle("Due date", isOn: Binding(get: { draft.dueDate != nil }, set: { draft.dueDate = $0 ? (draft.dueDate ?? .now) : nil }))
                 if draft.dueDate != nil {

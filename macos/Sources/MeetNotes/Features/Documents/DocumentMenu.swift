@@ -46,9 +46,9 @@ struct DocumentMenu: View {
     private func email() {
         let ins = (try? model.store.insights(of: meeting.id)) ?? []
         let acts = (try? model.store.actionItems(of: meeting.id)) ?? []
-        var body = meeting.summary + "\n\nKey Insights\n"
+        var body = meeting.summary + "\n\nHighlights\n"
         for i in ins { body += "- \(i.text)\n" }
-        body += "\nAction Items\n"
+        body += "\nFollow-ups\n"
         for a in acts { body += "- \(a.text)\n" }
         body += "\nPrepared with Keepword"
         var c = URLComponents(string: "mailto:")!

@@ -139,9 +139,9 @@ enum MCPHandler {
               "date_from": prop("string", "yyyy-MM-dd"), "date_to": prop("string", "yyyy-MM-dd"), "limit": prop("integer", "Default 20.")]),
         tool("get_transcript", "Full transcript of one meeting. Each line: [mm:ss] Speaker: text.",
              ["meeting_id": prop("string", "Meeting id.")], required: ["meeting_id"]),
-        tool("get_summary", "Overview, key insights (with times), action items, tags, participants and notes of one meeting.",
+        tool("get_summary", "Overview, highlights (with times), follow-ups, tags, participants and notes of one meeting.",
              ["meeting_id": prop("string", "Meeting id.")], required: ["meeting_id"]),
-        tool("get_action_items", "Action items across meetings.",
+        tool("get_action_items", "Follow-ups across meetings.",
              ["meeting_ids": ["type": "array", "items": ["type": "string"], "description": "Optional meeting ids; omit for all meetings."],
               "open_only": prop("boolean", "Only incomplete items (default true).")]),
     ]
@@ -220,7 +220,7 @@ enum MCPHandler {
             let ids = (a["meeting_ids"] as? [String]).map(Set.init)
             let openOnly = a["open_only"] as? Bool ?? true
             let items = try store.allActionItems().filter { (ids?.contains($0.1.id) ?? true) && (!openOnly || !$0.0.completed) }
-            return items.isEmpty ? "No action items." : items.map { item, m in
+            return items.isEmpty ? "No follow-ups." : items.map { item, m in
                 "- [\(item.completed ? "x" : " ")] \(item.text)" + (item.assignee.map { " — \($0)" } ?? "")
                     + (item.dueDate.map { " (due \(day.string(from: $0)))" } ?? "") + " · \(m.title) [\(m.id)]"
             }.joined(separator: "\n")

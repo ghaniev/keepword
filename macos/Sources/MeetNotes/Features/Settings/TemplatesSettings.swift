@@ -29,11 +29,11 @@ struct TemplatesSettings: View {
                 Form {
                     TextField("Template Name", text: Binding(get: { d.name }, set: { draft?.name = $0 }))
                     VStack(alignment: .leading) {
-                        Text("Key Insights — what to pay attention to")
+                        Text("Highlights — what to pay attention to")
                         TextEditor(text: Binding(get: { d.insightsPrompt }, set: { draft?.insightsPrompt = $0 })).font(.system(size: 12)).frame(height: 120)
                     }
                     VStack(alignment: .leading) {
-                        Text("Action Items — what counts as a follow-up")
+                        Text("Follow-ups — what counts as one")
                         TextEditor(text: Binding(get: { d.actionsPrompt }, set: { draft?.actionsPrompt = $0 })).font(.system(size: 12)).frame(height: 100)
                     }
                     HStack {
@@ -41,7 +41,7 @@ struct TemplatesSettings: View {
                         Spacer()
                         Button("Save Changes") { save() }.keyboardShortcut("s")
                     }
-                    Text("Order of use: document template → folder template → default template.").font(.caption).foregroundStyle(.secondary)
+                    Text("Order of use: meeting template → folder template → default template.").font(.caption).foregroundStyle(.secondary)
                 }
                 .formStyle(.grouped)
             } else {

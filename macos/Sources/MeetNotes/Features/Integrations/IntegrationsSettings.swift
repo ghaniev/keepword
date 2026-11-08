@@ -9,7 +9,7 @@ struct IntegrationsSettings: View {
         Form {
             Section {
                 if mcp.servers.isEmpty {
-                    Text("No services yet. Add Jira, Linear, Notion or another MCP server to create tasks from action items and notes.")
+                    Text("No services yet. Add Jira, Linear, Notion or another MCP server to create tasks from follow-ups and notes.")
                         .foregroundStyle(.secondary)
                 }
                 ForEach(mcp.servers) { s in

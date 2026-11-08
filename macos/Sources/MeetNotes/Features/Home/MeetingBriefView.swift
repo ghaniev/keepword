@@ -38,7 +38,7 @@ struct MeetingBriefView: View {
                 }
                 if !brief.openItems.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        SectionTitle(title: "Open Action Items", count: "\(brief.openItems.count)")
+                        SectionTitle(title: "Open Follow-ups", count: "\(brief.openItems.count)")
                         ForEach(brief.openItems, id: \.0.id) { a, m in ActionItemRow(item: a, meetingTitle: m.title) }
                     }
                 }
@@ -70,7 +70,7 @@ struct MeetingBriefButton: View {
         HStack(spacing: 0) {
             if let brief, !brief.isEmpty {
                 Button { showing = true } label: { Label("Brief", systemImage: "text.page") }
-                    .help("\(plural(brief.related.count, "earlier meeting")) · \(plural(brief.openItems.count, "open action item"))")
+                    .help("\(plural(brief.related.count, "earlier meeting")) · \(plural(brief.openItems.count, "open follow-up"))")
                     .popover(isPresented: $showing, arrowEdge: .bottom) { MeetingBriefView(event: event, brief: brief) }
             }
         }

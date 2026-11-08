@@ -143,7 +143,7 @@ struct CloudAICard: View {
                 Label("Self-host for privacy", systemImage: "server.rack")
             }
             .padding(.top, 8)
-            Text("If you choose a cloud provider, Keepword sends text transcripts of your calls, including participant names and meeting titles, to that provider to generate insights. Recorded audio never leaves your Mac.")
+            Text("If you choose a cloud provider, Keepword sends text transcripts of your calls, including participant names and meeting titles, to that provider to write recaps. Recorded audio never leaves your Mac.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 6)
             Spacer(minLength: 0)

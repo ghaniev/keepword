@@ -56,7 +56,7 @@
       <key>other</key><string>%lld прошлых встреч</string>
     </dict>
   </dict>
-  <key>%lld open action items</key><dict>
+  <key>%lld open follow-ups</key><dict>
     <key>NSStringLocalizedFormatKey</key><string>%#@n@</string>
     <key>n</key><dict>
       <key>NSStringFormatSpecTypeKey</key><string>NSStringPluralRuleType</string>

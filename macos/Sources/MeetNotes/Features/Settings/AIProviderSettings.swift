@@ -68,7 +68,7 @@ struct AIProviderSettings: View {
                     Text("Embedding server").tag("server")
                     Text("Off — keyword search only").tag("off")
                 }
-                .onChange(of: embeddingSource) { model.reindexAll(); model.toast = String(localized: "Reindexing documents...") }
+                .onChange(of: embeddingSource) { model.reindexAll(); model.toast = String(localized: "Reindexing meetings…") }
                 switch embeddingSource {
                 case "local":
                     Text("paraphrase-multilingual-MiniLM-L12-v2: 50+ languages including Russian, runs on this Mac, no key. Downloaded once (~470 MB) into the Keepword library.")
@@ -82,9 +82,9 @@ struct AIProviderSettings: View {
                     Text("Ollama: `ollama pull bge-m3`. OpenAI: text-embedding-3-small. CLI providers and Anthropic have no embeddings.")
                         .font(.caption).foregroundStyle(.secondary)
                 default:
-                    Text("Search matches words only; Similar Documents and chat across meetings get weaker.").font(.caption).foregroundStyle(.secondary)
+                    Text("Search matches words only; Related meetings and chat across meetings get weaker.").font(.caption).foregroundStyle(.secondary)
                 }
-                Button(String(localized: "Reindex All Documents")) { model.reindexAll(); model.toast = String(localized: "Reindexing documents...") }
+                Button(String(localized: "Reindex All Meetings")) { model.reindexAll(); model.toast = String(localized: "Reindexing meetings…") }
             }
         }
         .formStyle(.grouped)

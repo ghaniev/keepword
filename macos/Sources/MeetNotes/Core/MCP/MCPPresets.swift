@@ -55,7 +55,7 @@ enum MCPPresets {
             id: "notion", name: "Notion", url: "https://mcp.notion.com/mcp", taskTool: "notion-create-pages",
             hidden: ["pages", "allow_async", "creation_mode", "is_skill"],
             placeholders: ["parent": String(localized: "Notion page link (empty: a private page)")],
-            note: String(localized: "Notion's MCP server. Each action item becomes a page under the page you choose."),
+            note: String(localized: "Notion's MCP server. Each follow-up becomes a page under the page you choose."),
             build: { d, shared in
                 var args: [String: Any] = ["pages": [["properties": ["title": d.title], "content": d.details]]]
                 if let id = MCPPresets.notionID(shared["parent"] ?? "") { args["parent"] = ["page_id": id] }

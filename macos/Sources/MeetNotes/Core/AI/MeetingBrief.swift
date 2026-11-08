@@ -37,7 +37,7 @@ struct MeetingBrief {
             notes += "\n"
         }
         if !openItems.isEmpty {
-            notes += "## Open action items\n"
+            notes += "## Open follow-ups\n"
             for (a, m) in openItems {
                 notes += "- \(a.text)" + (a.assignee.map { " (\($0))" } ?? "")
                     + (a.dueDate.map { ", due \($0.formatted(date: .abbreviated, time: .omitted))" } ?? "") + " — from “\(m.title)”\n"

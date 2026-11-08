@@ -28,7 +28,7 @@ enum MarkdownExport {
         if !m.summary.isEmpty { md += m.summary + "\n\n" }
         let insights = try store.insights(of: id)
         if !insights.isEmpty {
-            md += "## Key Insights\n"
+            md += "## Highlights\n"
             for i in insights {
                 let time: String = i.time.map { " (\(timestamp($0)))" } ?? ""
                 md += "- \(i.text)\(time)\n"
@@ -37,7 +37,7 @@ enum MarkdownExport {
         }
         let items = try store.actionItems(of: id)
         if !items.isEmpty {
-            md += "## Action Items\n"
+            md += "## Follow-ups\n"
             for a in items {
                 let who: String = a.assignee.map { " — \($0)" } ?? ""
                 let due: String = a.dueDate.map { " 📅 " + $0.formatted(.iso8601.year().month().day()) } ?? ""
