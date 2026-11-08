@@ -24,9 +24,15 @@ foreach ($file in @('meetnotes.exe','onnxruntime/onnxruntime.dll','onnxruntime/T
 }
 $appPath = Join-Path $installation 'meetnotes.exe'
 $appProcess = Start-Process -FilePath $appPath -ArgumentList @('--library-path', ('"' + $library + '"')) -WorkingDirectory $installation -WindowStyle Hidden -PassThru
-Start-Sleep -Seconds 5
+# A cold first launch on a CI runner (Defender scan, WebView2 setup) can take well over 5 seconds.
+$database = Join-Path $library 'meetnotes.sqlite'
+for ($attempt = 0; $attempt -lt 60 -and -not $appProcess.HasExited -and -not (Test-Path -LiteralPath $database); $attempt++) { Start-Sleep -Seconds 1 }
 if ($appProcess.HasExited) { throw "Installed app exited on startup: $($appProcess.ExitCode)" }
-if (-not (Test-Path -LiteralPath (Join-Path $library 'meetnotes.sqlite'))) { throw 'Installed app did not initialize its isolated library' }
+if (-not (Test-Path -LiteralPath $database)) {
+    Get-ChildItem -Force -Recurse -LiteralPath $library | ForEach-Object { Write-Output "library: $($_.FullName)" }
+    Stop-Process -Id $appProcess.Id
+    throw 'Installed app did not initialize its isolated library within 60 seconds'
+}
 # This process was created by this test with an empty library; no microphone is started.
 Stop-Process -Id $appProcess.Id
 Install-TestBuild
