@@ -144,7 +144,7 @@ Action items can become tasks in Jira, Linear, Notion, Asana or Miro. Each has a
 | Calendar | macOS calendars, Google Calendar | ICS feeds |
 | Action items go to | Apple Reminders and MCP services | MCP services |
 | Not there yet | | Whisper, Brief and Needs Attention on Home, plain-text action items, starting an in-person recording from the tray |
-| Status | Signed and notarized download | Built from source; needs testing on more hardware and real calls |
+| Status | Signed and notarized download | Unsigned test installer; needs testing on more hardware and real calls |
 
 The Windows plan and its progress are in [`windows/PLAN.md`](windows/PLAN.md).
 
@@ -178,7 +178,9 @@ On first use macOS asks for microphone and system audio access, and later for Ca
 
 ### Windows
 
-There is no Windows download yet, so build it from source. You need Visual Studio Build Tools with the "Desktop development with C++" workload, Rust, Node.js 20 or later and the WebView2 runtime, which Windows 11 already has. Then:
+Download `Keepword_0.1.1_x64-setup.exe` from [Releases](https://github.com/ghaniev/keepword/releases/latest) and run it. The installer isn't signed yet, so Windows SmartScreen warns about an unknown publisher: click **More info**, then **Run anyway**. The `.sha256` file next to it holds the checksum. The Windows app is newer than the Mac one and has had less testing.
+
+To build it yourself, you need Visual Studio Build Tools with the "Desktop development with C++" workload, Rust, Node.js 20 or later and the WebView2 runtime, which Windows 11 already has. Then:
 
 ```powershell
 cd windows\app
